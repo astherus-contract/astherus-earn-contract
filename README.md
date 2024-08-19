@@ -1,0 +1,1 @@
+# astherus-earn-contract
