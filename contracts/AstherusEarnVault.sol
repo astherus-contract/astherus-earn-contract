@@ -169,11 +169,11 @@ contract AstherusEarnVault is Initializable, PausableUpgradeable, AccessControlE
         emit UpdateWithdrawEnabled(assTokenAddress);
     }
 
-    function deposit(address sourceTokenAddress, uint256 amountIn) external nonReentrant{
+    function deposit(address sourceTokenAddress, uint256 amountIn) external nonReentrant whenNotPaused{
         _mintAssXXX(sourceTokenAddress, amountIn);
     }
 
-    function depositNative() external payable nonReentrant{
+    function depositNative() external payable nonReentrant whenNotPaused{
         uint256 amount = msg.value;
         _mintAssXXX(NATIVE_WRAPPED, amount);
     }
