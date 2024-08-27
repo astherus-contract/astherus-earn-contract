@@ -38,7 +38,6 @@ contract AstherusEarnVault is Initializable, PausableUpgradeable, AccessControlE
     event MintAssXXX(address indexed sender, address indexed sourceTokenAddress, uint256 amountIn, uint256 assXXXAmount);
     event NewSigner(address oldSigner, address newSigner);
     event AddToken(address indexed currency);
-    event RemoveToken(address indexed currency);
     event UpdateDepositEnabled(address indexed currency);
     event UpdateWithdrawEnabled(address indexed currency);
 
@@ -51,9 +50,9 @@ contract AstherusEarnVault is Initializable, PausableUpgradeable, AccessControlE
         address assTokenAddress;
         address sourceTokenAddress;
         uint8 sourceTokenDecimals;
-        //priceDecimals=8;ass token price= sourceToken Net Profit/assToken total supply
-        uint256 assTokenPrice;
-        uint256 priceDeadline;
+        //assToSourceExchangeRate Decimals=8;assToSourceExchangeRate= XXX amount/(assXXX total supply)
+        uint256 assToSourceExchangeRate;
+        uint256 exchangeRateTimestamp;
         bool depositEnabled;
         bool withdrawEnabled;
     }
@@ -122,8 +121,7 @@ contract AstherusEarnVault is Initializable, PausableUpgradeable, AccessControlE
     function addToken(
         address assTokenAddress,
         address sourceTokenAddress,
-        uint8 sourceTokenDecimals,
-        uint256 priceDeadline,
+        uint256 exchangeRateTimestamp,
         bool depositEnabled,
         bool withdrawEnabled
     ) external onlyRole(ADMIN_ROLE) {
@@ -131,16 +129,15 @@ contract AstherusEarnVault is Initializable, PausableUpgradeable, AccessControlE
         if (assTokenAddress == address(0) || sourceTokenAddress == address(0)) revert ZeroAddress();
 
         uint8 correctDecimals = IERC20Metadata(sourceTokenAddress).decimals();
-        require(sourceTokenDecimals == correctDecimals, "Invalid sourceTokenDecimals");
 
         Token storage token = supportAssToken[assTokenAddress];
         require(token.assTokenAddress == address(0), "Duplicate add");
 
         token.assTokenAddress = assTokenAddress;
         token.sourceTokenAddress = sourceTokenAddress;
-        token.sourceTokenDecimals = sourceTokenDecimals;
-        token.assTokenPrice = 1e8;
-        token.priceDeadline = priceDeadline;
+        token.sourceTokenDecimals = correctDecimals;
+        token.assToSourceExchangeRate = 1e8;
+        token.exchangeRateTimestamp = exchangeRateTimestamp;
         token.depositEnabled = depositEnabled;
         token.withdrawEnabled = withdrawEnabled;
 
@@ -180,19 +177,18 @@ contract AstherusEarnVault is Initializable, PausableUpgradeable, AccessControlE
 
     function _mintAssXXX(address sourceTokenAddress, uint256 amountIn) private {
         if (sourceTokenAddress == address(0)) revert ZeroAddress();
-        if (amountIn == 0) revert ZeroAddress();
+        if (amountIn == 0) revert ZeroAmount();
 
         address assTokenAddress = supportSourceToken[sourceTokenAddress];
         require(assTokenAddress != address(0), "currency not support");
 
         Token storage token = supportAssToken[assTokenAddress];
         require(token.depositEnabled == true, "Pause deposit");
-        require(block.timestamp < token.priceDeadline, "Price expired");
+        require(block.timestamp < token.exchangeRateTimestamp, "Price expired");
 
-        //assXXXPrice=token.assTokenPrice # XXX/(assXXX total supply)
-        //XXXPrice=1/assXXXPrice
-        //assXXXAmount=1/(assXXXPrice/1e8) * amountIn/(10 ** token.sourceTokenDecimals) * 1e18
-        uint256 assXXXAmount = amountIn * 1e26 / (token.assTokenPrice * (10 ** token.sourceTokenDecimals));
+        //assToSourceExchangeRate=token.assToSourceExchangeRate # XXX amount/(assXXX total supply)
+        //assXXXAmount=1/(assToSourceExchangeRate/1e8) * amountIn/(10 ** token.sourceTokenDecimals) * 1e18
+        uint256 assXXXAmount = amountIn * 1e26 / (token.assToSourceExchangeRate * (10 ** token.sourceTokenDecimals));
 
         _transferFrom(sourceTokenAddress, msg.sender, amountIn);
         treasury[sourceTokenAddress] += amountIn;
