@@ -4,7 +4,7 @@ import { type DeployFunction } from 'hardhat-deploy/types'
 
 const contractName = 'AssXXX'
 
-const name='AssUSDT'
+const name='Astherus AssUSDT'
 const symbol='AssUSDT'
 
 const deploy: DeployFunction = async (hre) => {

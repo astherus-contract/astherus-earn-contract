@@ -11,10 +11,14 @@ pnpm compile
 # 生成abi
 npx hardhat export-abi
 
+# 时间锁合约
+hardhat deploy --network bscTestnet --tags AstherusEarnTimelock
+
 # 代理合约部署
 hardhat deploy --network bscTestnet --tags AstherusEarnVault
 
 # 验证合约
+hardhat deploy --network bscTestnet --tags AstherusEarnTimelockVerify
 hardhat deploy --network bscTestnet --tags AstherusEarnVaultVerify
 
 # 合约升级
@@ -22,9 +26,9 @@ hardhat deploy --network bscTestnet --tags AstherusEarnVaultImplementation
 
 # AssXXX 部署
 hardhat deploy --network bscTestnet-BTC --tags AssXXX
-hardhat deploy --network bscTestnet-BNB --tags AssBNB
-hardhat deploy --network bscTestnet-USDT --tags AssUSDT
-hardhat deploy --network bscTestnet-USDC --tags AssUSDC
+hardhat deploy --network bscTestnet-BNB --tags AssXXX
+hardhat deploy --network bscTestnet-USDT --tags AssXXX
+hardhat deploy --network bscTestnet-USDC --tags AssXXX
 
 # 部署测试asset BTC BNB USDT USDC
 hardhat deploy --network bscTestnet-BNB --tags BNBTest
@@ -33,4 +37,8 @@ hardhat deploy --network bscTestnet-USDT --tags USDTTest
 hardhat deploy --network bscTestnet-USDC --tags USDCTest
 
 
-# verify
+# 测试合约升级
+npx hardhat upgrade:AstherusEarnVault --network bscTestnet
+
+
+# 分配权限

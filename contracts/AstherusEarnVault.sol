@@ -26,7 +26,6 @@ contract AstherusEarnVault is Initializable, PausableUpgradeable, AccessControlE
 
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant PAUSE_ROLE = keccak256("PAUSE_ROLE");
-    bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
 
     uint256 private constant _NOT_ENTERED = 1;
     uint256 private constant _ENTERED = 2;
@@ -70,16 +69,16 @@ contract AstherusEarnVault is Initializable, PausableUpgradeable, AccessControlE
     uint256 private status;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor(address nativeWrapped) {
-//        TIMELOCK_ADDRESS = timelockAddress;
+    constructor(address nativeWrapped, address timelockAddress) {
         NATIVE_WRAPPED = nativeWrapped;
+        TIMELOCK_ADDRESS = timelockAddress;
         _disableInitializers();
     }
 
-//    modifier onlyTImelock() {
-//        require(msg.sender == TIMELOCK_ADDRESS, "only timelock");
-//        _;
-//    }
+    modifier onlyTImelock() {
+        require(msg.sender == TIMELOCK_ADDRESS, "only timelock");
+        _;
+    }
 
 
 
@@ -108,7 +107,7 @@ contract AstherusEarnVault is Initializable, PausableUpgradeable, AccessControlE
         _unpause();
     }
 
-    function _authorizeUpgrade(address newImplementation) internal onlyRole(UPGRADER_ROLE) override {}
+    function _authorizeUpgrade(address newImplementation) internal onlyTImelock override {}
 
 
     function changeSigner(address newSigner) external onlyRole(ADMIN_ROLE) {

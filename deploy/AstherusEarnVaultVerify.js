@@ -8,12 +8,16 @@ module.exports = async function ({
     getUnnamedAccounts
 }) {
     const {deploy} = deployments;
-    const AstherusEarnVaultImplementation = await ethers.getContract('AstherusEarnVault_Implementation');
+    const BNB_CHAIN_TESTNET_WRAPPED = '0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd';
+    const BNB_CHAIN_WRAPPED = '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c';
+    const AstherusEarnVaultImplementation = await ethers.getContract('AstherusEarnVaultImplementation');
+    const AstherusEarnTimelock = await ethers.getContract('AstherusEarnTimelock');
+
     await run(
         "verify:verify", 
         {
             address: AstherusEarnVaultImplementation.target,
-            constructorArguments: []
+            constructorArguments: [BNB_CHAIN_TESTNET_WRAPPED, AstherusEarnTimelock.target]
         }
     );
 };
