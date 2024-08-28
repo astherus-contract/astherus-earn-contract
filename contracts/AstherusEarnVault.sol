@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.22;
+pragma solidity 0.8.25;
 
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -51,7 +51,7 @@ contract AstherusEarnVault is Initializable, PausableUpgradeable, AccessControlE
         uint8 sourceTokenDecimals;
         //assToSourceExchangeRate Decimals=8;assToSourceExchangeRate= XXX amount/(assXXX total supply)
         uint256 assToSourceExchangeRate;
-        uint256 exchangeRateTimestamp;
+        uint256 exchangeRateExpiredTimestamp;
         bool depositEnabled;
         bool withdrawEnabled;
     }
@@ -120,7 +120,7 @@ contract AstherusEarnVault is Initializable, PausableUpgradeable, AccessControlE
     function addToken(
         address assTokenAddress,
         address sourceTokenAddress,
-        uint256 exchangeRateTimestamp,
+        uint256 exchangeRateExpiredTimestamp,
         bool depositEnabled,
         bool withdrawEnabled
     ) external onlyRole(ADMIN_ROLE) {
@@ -136,7 +136,7 @@ contract AstherusEarnVault is Initializable, PausableUpgradeable, AccessControlE
         token.sourceTokenAddress = sourceTokenAddress;
         token.sourceTokenDecimals = correctDecimals;
         token.assToSourceExchangeRate = 1e8;
-        token.exchangeRateTimestamp = exchangeRateTimestamp;
+        token.exchangeRateExpiredTimestamp = exchangeRateExpiredTimestamp;
         token.depositEnabled = depositEnabled;
         token.withdrawEnabled = withdrawEnabled;
 
@@ -183,7 +183,7 @@ contract AstherusEarnVault is Initializable, PausableUpgradeable, AccessControlE
 
         Token storage token = supportAssToken[assTokenAddress];
         require(token.depositEnabled == true, "Pause deposit");
-        require(block.timestamp < token.exchangeRateTimestamp, "Price expired");
+        require(block.timestamp < token.exchangeRateExpiredTimestamp, "exchange rate expired");
 
         //assToSourceExchangeRate=token.assToSourceExchangeRate # XXX amount/(assXXX total supply)
         //assXXXAmount=1/(assToSourceExchangeRate/1e8) * amountIn/(10 ** token.sourceTokenDecimals) * 1e18

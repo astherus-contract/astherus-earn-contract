@@ -42,3 +42,8 @@ npx hardhat upgrade:AstherusEarnVault --network bscTestnet
 
 
 # 分配权限
+
+
+# 注意
+如果执行脚本报错,TypeError: Cannot read properties of undefined (reading 'JsonRpcProvider') 注释 hardhat.config.ts 文件中的  import '@layerzerolabs/toolbox-hardhat'
+因为 它与@nomicfoundation/hardhat-ethers有冲突

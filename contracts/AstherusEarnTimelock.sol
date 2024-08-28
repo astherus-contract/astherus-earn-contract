@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.22;
+pragma solidity 0.8.25;
 
 import '@openzeppelin/contracts/governance/TimelockController.sol';
 import '@openzeppelin/contracts/access/extensions/AccessControlEnumerable.sol';

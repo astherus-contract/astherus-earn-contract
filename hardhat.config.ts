@@ -12,6 +12,7 @@ import '@layerzerolabs/toolbox-hardhat'
 import 'hardhat-deploy';
 import "hardhat-deploy-ethers";
 import 'hardhat-abi-exporter';
+import 'hardhat-abi-exporter';
 require('./tasks/index.js');
 
 import { HardhatUserConfig, HttpNetworkAccountsUserConfig } from 'hardhat/types'
@@ -46,7 +47,7 @@ const config: HardhatUserConfig = {
     solidity: {
         compilers: [
             {
-                version: '0.8.22',
+                version: '0.8.25',
                 settings: {
                     optimizer: {
                         enabled: true,

@@ -1,6 +1,6 @@
 {
-  "name": "@layerzerolabs/oft-example",
-  "version": "0.2.14",
+  "name": "astherus-earn-contract",
+  "version": "0.0.1",
   "private": true,
   "license": "MIT",
   "scripts": {
@@ -16,27 +16,23 @@
     "test:forge": "forge test",
     "test:hardhat": "hardhat test"
   },
-  "resolutions": {
-    "ethers": "^5.7.2",
-    "hardhat-deploy": "^0.12.1"
-  },
   "devDependencies": {
     "@babel/core": "^7.23.9",
-    "@layerzerolabs/devtools-evm-hardhat": "^1.0.1",
-    "@layerzerolabs/eslint-config-next": "~2.3.34",
-    "@layerzerolabs/lz-definitions": "^2.3.34",
-    "@layerzerolabs/lz-evm-messagelib-v2": "^2.3.34",
-    "@layerzerolabs/lz-evm-protocol-v2": "^2.3.34",
-    "@layerzerolabs/lz-evm-v1-0.7": "^2.3.34",
-    "@layerzerolabs/lz-v2-utilities": "^2.3.34",
-    "@layerzerolabs/oapp-evm": "^0.0.2",
-    "@layerzerolabs/oft-evm": "^0.0.9",
-    "@layerzerolabs/prettier-config-next": "^2.3.34",
-    "@layerzerolabs/solhint-config": "^2.3.34",
-    "@layerzerolabs/test-devtools-evm-foundry": "~0.2.10",
+    "@layerzerolabs/devtools-evm-hardhat": "^1.1.0",
+    "@layerzerolabs/eslint-config-next": "~2.3.39",
+    "@layerzerolabs/lz-definitions": "^2.3.39",
+    "@layerzerolabs/lz-evm-messagelib-v2": "^2.3.39",
+    "@layerzerolabs/lz-evm-protocol-v2": "^2.3.39",
+    "@layerzerolabs/lz-evm-v1-0.7": "^2.3.39",
+    "@layerzerolabs/lz-v2-utilities": "^2.3.39",
+    "@layerzerolabs/oapp-evm": "^0.0.3",
+    "@layerzerolabs/oft-evm": "^0.0.10",
+    "@layerzerolabs/prettier-config-next": "^2.3.39",
+    "@layerzerolabs/solhint-config": "^2.3.39",
+    "@layerzerolabs/test-devtools-evm-foundry": "~0.2.11",
     "@layerzerolabs/toolbox-foundry": "~0.1.9",
-    "@layerzerolabs/toolbox-hardhat": "~0.3.3",
-    "@nomicfoundation/hardhat-ethers": "^3.0.5",
+    "@layerzerolabs/toolbox-hardhat": "~0.3.6",
+    "@nomicfoundation/hardhat-ethers": "^3.0.7",
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
     "@openzeppelin/contracts": "^5.0.2",
     "@openzeppelin/contracts-upgradeable": "^5.0.2",
@@ -48,8 +44,8 @@
     "dotenv": "^16.4.1",
     "eslint": "^8.55.0",
     "eslint-plugin-jest-extended": "~2.0.0",
-    "ethers": "^6.12.0",
-    "hardhat": "^2.22.3",
+    "ethers": "^6.13.2",
+    "hardhat": "^2.22.9",
     "hardhat-contract-sizer": "^2.10.0",
     "hardhat-deploy": "^0.12.4",
     "mocha": "^10.2.0",
@@ -60,21 +56,11 @@
     "typescript": "^5.4.4",
     "hardhat-abi-exporter": "^2.10.1",
     "hardhat-deploy-ethers": "^0.4.2",
-    "@nomicfoundation/hardhat-verify": "^2.0.6",
+    "@nomicfoundation/hardhat-verify": "^2.0.9",
     "prompt-sync": "^4.2.0",
     "shelljs": "^0.8.5"
   },
   "engines": {
     "node": ">=18.16.0"
-  },
-  "pnpm": {
-    "overrides": {
-      "ethers": "^5.7.2",
-      "hardhat-deploy": "^0.12.1"
-    }
-  },
-  "overrides": {
-    "ethers": "^5.7.2",
-    "hardhat-deploy": "^0.12.1"
   }
 }
