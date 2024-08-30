@@ -32,7 +32,7 @@ const deploy: DeployFunction = async (hre) => {
         skipIfAlreadyDeployed: false,
     })
 
-    console.log(`Deployed contract: ${contractName}, network: ${hre.network.name}, address: ${address}`)
+    console.log(`Deployed contract: ${symbol}, network: ${hre.network.name}, address: ${address}`)
 }
 
 deploy.tags = [symbol]

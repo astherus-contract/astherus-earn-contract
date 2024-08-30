@@ -43,10 +43,10 @@ hardhat deploy --network bscTestnet --tags AstherusEarnVaultImplementation
 
 # AssXXX 部署
 ```shell
-npx hardhat deploy --network bscTestnet-BTC --tags AssXXX
-npx hardhat deploy --network bscTestnet-BNB --tags AssXXX
-npx hardhat deploy --network bscTestnet-USDT --tags AssXXX
-npx hardhat deploy --network bscTestnet-USDC --tags AssXXX
+npx hardhat deploy --network bscTestnet-BTC --tags AssBTC
+npx hardhat deploy --network bscTestnet-BNB --tags AssBNB
+npx hardhat deploy --network bscTestnet-USDT --tags AssUSDT
+npx hardhat deploy --network bscTestnet-USDC --tags AssUSDC
 ```
 
 
@@ -63,7 +63,3 @@ npx hardhat upgrade:AstherusEarnVault --network bscTestnet
 
 # 分配权限
 
-
-# 注意
-如果执行脚本报错,TypeError: Cannot read properties of undefined (reading 'JsonRpcProvider') 注释 hardhat.config.ts 文件中的  import '@layerzerolabs/toolbox-hardhat'
-因为 它与@nomicfoundation/hardhat-ethers有冲突
