@@ -132,6 +132,8 @@ contract AstherusEarnVault is Initializable, PausableUpgradeable, AccessControlE
         Token storage token = supportAssToken[assTokenAddress];
         require(token.assTokenAddress == address(0), "Duplicate add");
 
+        require(supportSourceToken[sourceTokenAddress] != address(0), "Duplicate add");
+
         token.assTokenAddress = assTokenAddress;
         token.sourceTokenAddress = sourceTokenAddress;
         token.sourceTokenDecimals = correctDecimals;
