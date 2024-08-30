@@ -14,7 +14,7 @@ module.exports = async function ({
     await run(
         "verify:verify", 
         {
-            address: AstherusEarnTimelock.target,
+            address: AstherusEarnTimelock.address,
             constructorArguments: [
                 TimeLockConfig['default'].TimeLock.minDelay,
                 TimeLockConfig['default'].TimeLock.maxDelay,

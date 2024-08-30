@@ -8,17 +8,20 @@ task("upgrade:AstherusEarnVault", "update AstherusEarnVault contract")
         const AstherusEarnVault = await ethers.getContract('AstherusEarnVault')
         const AstherusEarnVaultImplementation = await ethers.getContract('AstherusEarnVault_Implementation');
         const AstherusEarnTimelock = await ethers.getContract('AstherusEarnTimelock');
+        const provider = new ethers.providers.JsonRpcProvider(network.config.url);
 
-        const storage = `0x${(BigInt(ethers.id('eip1967.proxy.implementation'), 16) - 1n).toString(16)}`;
-        const currentImplementation = ethers.AbiCoder.defaultAbiCoder().decode(['address'], await ethers.provider.getStorage(AstherusEarnVault.target, storage))[0];
-        if (currentImplementation.toLowerCase() === AstherusEarnVaultImplementation.target.toLowerCase()) {
+
+        const storage = `0x${(BigInt(ethers.utils.id('eip1967.proxy.implementation'), 16) - 1n).toString(16)}`;
+        const currentImplementation = ethers.utils.defaultAbiCoder.decode(['address'], await provider.getStorageAt(AstherusEarnVault.address, storage))[0];
+        if (currentImplementation.toLowerCase() === AstherusEarnVaultImplementation.address.toLowerCase()) {
             console.log(`already updated. implementation: ${currentImplementation}`);
             return;
         }
+
         const ABI = '[{"inputs":[{"internalType":"address","name":"target","type":"address"},{"internalType":"string","name":"functionSignature","type":"string"},{"internalType":"bytes","name":"data","type":"bytes"}],"name":"executeTask","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"target","type":"address"},{"internalType":"string","name":"functionSignature","type":"string"},{"internalType":"bytes","name":"data","type":"bytes"}],"name":"scheduleTask","outputs":[],"stateMutability":"nonpayable","type":"function"}]';
-        const target = AstherusEarnVault.target;
+        const target = AstherusEarnVault.address;
         const functionSignature = 'upgradeToAndCall(address,bytes)';
-        const data = '0x' + AstherusEarnVault.interface.encodeFunctionData('upgradeToAndCall', [AstherusEarnVaultImplementation.target, '0x']).substring(10);
+        const data = '0x' + AstherusEarnVault.interface.encodeFunctionData('upgradeToAndCall', [AstherusEarnVaultImplementation.address, '0x']).substring(10);
         console.log(`ABI: ${ABI}`);
         console.log(`target: ${target}`);
         console.log(`functionSignature: ${functionSignature}`);
@@ -32,16 +35,16 @@ task("upgrade:AstherusEarnVault", "update AstherusEarnVault contract")
         if (hasProposer) {
             let tx = await AstherusEarnTimelock.connect(proposer).scheduleTask(target, functionSignature, data);
             tx = await tx.wait();
-            console.log(`schedule finish. txHash: ${tx.hash}`);
+            console.log(`schedule finish. txHash: ${tx.transactionHash}`);
         }
         if (hasExecutor) {
             const minDelay = Number(await AstherusEarnTimelock.getMinDelay()) + 10;
             console.log(`delay ${minDelay} seconds for execute`);
             const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
-            await delay(minDelay * 1000) 
+            await delay(minDelay * 1000)
             let tx = await AstherusEarnTimelock.connect(executor).executeTask(target, functionSignature, data);
             tx = await tx.wait();
-            console.log(`execute finish. txHash: ${tx.hash}`);
+            console.log(`execute finish. txHash: ${tx.transactionHash}`);
         }
     });
 

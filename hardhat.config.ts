@@ -9,6 +9,7 @@ import "@nomicfoundation/hardhat-toolbox";
 import "@nomicfoundation/hardhat-verify";
 import "@nomicfoundation/hardhat-ethers";
 import '@layerzerolabs/toolbox-hardhat'
+import '@nomiclabs/hardhat-ethers'
 import 'hardhat-deploy';
 import "hardhat-deploy-ethers";
 import 'hardhat-abi-exporter';

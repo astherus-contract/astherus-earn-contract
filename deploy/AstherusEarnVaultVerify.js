@@ -16,8 +16,8 @@ module.exports = async function ({
     await run(
         "verify:verify", 
         {
-            address: AstherusEarnVaultImplementation.target,
-            constructorArguments: [BNB_CHAIN_TESTNET_WRAPPED, AstherusEarnTimelock.target]
+            address: AstherusEarnVaultImplementation.address,
+            constructorArguments: [BNB_CHAIN_TESTNET_WRAPPED, AstherusEarnTimelock.address]
         }
     );
 };

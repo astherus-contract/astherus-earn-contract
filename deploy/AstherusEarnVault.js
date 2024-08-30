@@ -14,7 +14,7 @@ module.exports = async function ({
 
     await deploy('AstherusEarnVault', {
             from: deployer,
-        args: [BNB_CHAIN_TESTNET_WRAPPED, AstherusEarnTimelock.target],
+        args: [BNB_CHAIN_TESTNET_WRAPPED, AstherusEarnTimelock.address],
             log: true, 
             skipIfAlreadyDeployed: false,
             proxy: {

@@ -13,7 +13,7 @@ module.exports = async function ({
     const deployment = await deploy('AstherusEarnVault_Implementation', {
         contract: "AstherusEarnVault",
         from: deployer,
-        args: [BNB_CHAIN_TESTNET_WRAPPED, AstherusEarnTimelock.target],
+        args: [BNB_CHAIN_TESTNET_WRAPPED, AstherusEarnTimelock.address],
         log: true, 
         skipIfAlreadyDeployed: false,
     });
