@@ -1,5 +1,5 @@
 {
-  "address": "0x070127AAd47c3737bc3b2FF3ca5FCA372a87c532",
+  "address": "0xEF417b2D20ffB2e5625fF89F1Ca5923055e6A98F",
   "abi": [
     {
       "anonymous": false,
@@ -139,6 +139,11 @@
       "type": "error"
     },
     {
+      "inputs": [],
+      "name": "ReentrancyGuardReentrantCall",
+      "type": "error"
+    },
+    {
       "inputs": [
         {
           "internalType": "address",
@@ -166,14 +171,23 @@
       "type": "error"
     },
     {
-      "inputs": [],
-      "name": "ZeroAddress",
-      "type": "error"
-    },
-    {
-      "inputs": [],
-      "name": "ZeroAmount",
-      "type": "error"
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "assTokenAddress",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sourceTokenAddress",
+          "type": "address"
+        }
+      ],
+      "name": "AddToken",
+      "type": "event"
     },
     {
       "anonymous": false,
@@ -181,11 +195,78 @@
         {
           "indexed": true,
           "internalType": "address",
-          "name": "currency",
+          "name": "receipt",
           "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "assTokenAddress",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sourceTokenAddress",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "assTokenAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "sourceTokenAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "requestWithdrawNo",
+          "type": "uint256"
         }
       ],
-      "name": "AddToken",
+      "name": "ClaimWithdraw",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "assTokenAddress",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "assTokenAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sourceTokenAddress",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "sourceTokenAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "requestWithdrawNo",
+          "type": "uint256"
+        }
+      ],
+      "name": "DistributeWithdraw",
       "type": "event"
     },
     {
@@ -217,6 +298,12 @@
           "type": "address"
         },
         {
+          "indexed": true,
+          "internalType": "address",
+          "name": "assTokenAddress",
+          "type": "address"
+        },
+        {
           "indexed": false,
           "internalType": "uint256",
           "name": "amountIn",
@@ -227,28 +314,15 @@
           "internalType": "uint256",
           "name": "assXXXAmount",
           "type": "uint256"
-        }
-      ],
-      "name": "MintAssXXX",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": false,
-          "internalType": "address",
-          "name": "oldSigner",
-          "type": "address"
         },
         {
           "indexed": false,
-          "internalType": "address",
-          "name": "newSigner",
-          "type": "address"
+          "internalType": "uint256",
+          "name": "assToSourceExchangeRate",
+          "type": "uint256"
         }
       ],
-      "name": "NewSigner",
+      "name": "MintAssXXX",
       "type": "event"
     },
     {
@@ -262,6 +336,37 @@
         }
       ],
       "name": "Paused",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "assTokenAddress",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "assTokenAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "requestWithdrawNo",
+          "type": "uint256"
+        }
+      ],
+      "name": "RequestWithdraw",
       "type": "event"
     },
     {
@@ -343,6 +448,31 @@
       "anonymous": false,
       "inputs": [
         {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sourceTokenAddress",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "sourceTokenAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "sefu",
+          "type": "address"
+        }
+      ],
+      "name": "TransferToCeffu",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
           "indexed": false,
           "internalType": "address",
           "name": "account",
@@ -358,8 +488,45 @@
         {
           "indexed": true,
           "internalType": "address",
-          "name": "currency",
+          "name": "assTokenAddress",
           "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "oldCeffuAddress",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "newCeffuAddress",
+          "type": "address"
+        }
+      ],
+      "name": "UpdateCeffuAddress",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "assTokenAddress",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "oldDepositEnabled",
+          "type": "bool"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "newDepositEnabled",
+          "type": "bool"
         }
       ],
       "name": "UpdateDepositEnabled",
@@ -371,11 +538,73 @@
         {
           "indexed": true,
           "internalType": "address",
-          "name": "currency",
+          "name": "assTokenAddress",
           "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "oldTransferToCeffuEnabled",
+          "type": "bool"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "newTransferToCeffuEnabled",
+          "type": "bool"
+        }
+      ],
+      "name": "UpdateTransferToCeffuEnabled",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "assTokenAddress",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "oldWithdrawEnabled",
+          "type": "bool"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "newWithdrawEnabled",
+          "type": "bool"
         }
       ],
       "name": "UpdateWithdrawEnabled",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "assTokenAddress",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "assToSourceExchangeRate",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "exchangeRateExpiredTimestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "UploadExchangeRate",
       "type": "event"
     },
     {
@@ -457,6 +686,32 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "VAULT_ROLE",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "WITHDRAW_VAULT",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "address",
@@ -469,8 +724,13 @@
           "type": "address"
         },
         {
+          "internalType": "address",
+          "name": "ceffuAddress",
+          "type": "address"
+        },
+        {
           "internalType": "uint256",
-          "name": "exchangeRateTimestamp",
+          "name": "exchangeRateExpiredTimestamp",
           "type": "uint256"
         },
         {
@@ -481,6 +741,11 @@
         {
           "internalType": "bool",
           "name": "withdrawEnabled",
+          "type": "bool"
+        },
+        {
+          "internalType": "bool",
+          "name": "transferToCeffuEnabled",
           "type": "bool"
         }
       ],
@@ -511,12 +776,12 @@
     {
       "inputs": [
         {
-          "internalType": "address",
-          "name": "newSigner",
-          "type": "address"
+          "internalType": "uint256[]",
+          "name": "requestWithdrawNos",
+          "type": "uint256[]"
         }
       ],
-      "name": "changeSigner",
+      "name": "claimWithdraw",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -544,6 +809,46 @@
       "name": "depositNative",
       "outputs": [],
       "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "assTokenAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "assTokenAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "sourceTokenAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "requestWithdrawNo",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "receipt",
+              "type": "address"
+            }
+          ],
+          "internalType": "struct AstherusEarnVault.DistributeWithdrawInfo[]",
+          "name": "distributeWithdrawInfoList",
+          "type": "tuple[]"
+        }
+      ],
+      "name": "distributeWithdraw",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -736,6 +1041,68 @@
     {
       "inputs": [
         {
+          "internalType": "address",
+          "name": "assTokenAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "assTokenAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "requestWithdraw",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "requestWithdraws",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "assTokenAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "assTokenAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "sourceTokenAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "applyTimestamp",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "canClaimWithdraw",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "bytes32",
           "name": "role",
           "type": "bytes32"
@@ -752,13 +1119,19 @@
       "type": "function"
     },
     {
-      "inputs": [],
-      "name": "signer",
-      "outputs": [
+      "inputs": [
         {
           "internalType": "address",
           "name": "",
           "type": "address"
+        }
+      ],
+      "name": "sourceTokenTreasury",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -796,7 +1169,7 @@
         },
         {
           "internalType": "uint256",
-          "name": "exchangeRateTimestamp",
+          "name": "exchangeRateExpiredTimestamp",
           "type": "uint256"
         },
         {
@@ -807,6 +1180,16 @@
         {
           "internalType": "bool",
           "name": "withdrawEnabled",
+          "type": "bool"
+        },
+        {
+          "internalType": "address",
+          "name": "ceffuAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "transferToCeffuEnabled",
           "type": "bool"
         }
       ],
@@ -854,25 +1237,37 @@
     {
       "inputs": [
         {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
+          "internalType": "address[]",
+          "name": "assTokenAddressList",
+          "type": "address[]"
         }
       ],
-      "name": "treasury",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
+      "name": "transferToCeffu",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
       "inputs": [],
       "name": "unpause",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "assTokenAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "ceffuAddress",
+          "type": "address"
+        }
+      ],
+      "name": "updateCeffuAddress",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -891,6 +1286,24 @@
         }
       ],
       "name": "updateDepositEnabled",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "assTokenAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "enabled",
+          "type": "bool"
+        }
+      ],
+      "name": "updateTransferToCeffuEnabled",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -934,6 +1347,36 @@
     {
       "inputs": [
         {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "assTokenAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "assToSourceExchangeRate",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "exchangeRateExpiredTimestamp",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct AstherusEarnVault.ExchangeRateInfo[]",
+          "name": "exchangeRateInfoList",
+          "type": "tuple[]"
+        }
+      ],
+      "name": "uploadExchangeRate",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "address",
           "name": "_logic",
           "type": "address"
@@ -948,35 +1391,35 @@
       "type": "constructor"
     }
   ],
-  "transactionHash": "0x6a40dd318c6c501b5fdfc60ea0001cf61458a57e494eb36462787b66afb10d52",
+  "transactionHash": "0x1df90a119afc60cb5fc6024c43c88ed802f0fcfee46cf24eaec6c2cdaad94f7f",
   "receipt": {
     "to": null,
     "from": "0xf4903f4544558515b26ec4C6D6e91D2293b27275",
-    "contractAddress": "0x070127AAd47c3737bc3b2FF3ca5FCA372a87c532",
-    "transactionIndex": 5,
-    "gasUsed": "496305",
-    "logsBloom": "0x00000004000000000000000000000800400000000000000000000000000000080000000020000000000000000000000000000000000000000000000000000000000000000000000000000000000002000000000020000000000000000000000000000000020000000000000000000800000000000000000800000000000000000000000000000000080800000000004000000000000080000000000000000000000000000000000000000000200000000000000000100000001000000000000000000020000000000080000000000000000000000004000100000000000020000000000000010000000000000000000000000000000000000020000000000000",
-    "blockHash": "0xd3c44d973e35be425f985218a6a529e17cc0841276ceb1e4783c0b4559b2d737",
-    "transactionHash": "0x6a40dd318c6c501b5fdfc60ea0001cf61458a57e494eb36462787b66afb10d52",
+    "contractAddress": "0xEF417b2D20ffB2e5625fF89F1Ca5923055e6A98F",
+    "transactionIndex": 1,
+    "gasUsed": "610554",
+    "logsBloom": "0x00000004000000000000000000000800400000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002000000000020000000000000000000000000000000020400000000000000040800000000000000000800000000000000000000000000000000080800000000004000200000000080000000000000000000000000000000000020000000000000000000000000000000001000000000000000000020000000000000240000000000000000000004002100000000008020000000000000010000000000000000000000000000000000000000000000000000",
+    "blockHash": "0x461876c8cb198c2dec8c382b61674b819e7ecae39e98e0fe778e640c18e370ef",
+    "transactionHash": "0x1df90a119afc60cb5fc6024c43c88ed802f0fcfee46cf24eaec6c2cdaad94f7f",
     "logs": [
       {
-        "transactionIndex": 5,
-        "blockNumber": 43363069,
-        "transactionHash": "0x6a40dd318c6c501b5fdfc60ea0001cf61458a57e494eb36462787b66afb10d52",
-        "address": "0x070127AAd47c3737bc3b2FF3ca5FCA372a87c532",
+        "transactionIndex": 1,
+        "blockNumber": 43512559,
+        "transactionHash": "0x1df90a119afc60cb5fc6024c43c88ed802f0fcfee46cf24eaec6c2cdaad94f7f",
+        "address": "0xEF417b2D20ffB2e5625fF89F1Ca5923055e6A98F",
         "topics": [
           "0xbc7cd75a20ee27fd9adebab32041f755214dbc6bffa90cc0225b39da2e5c2d3b",
-          "0x000000000000000000000000184b72289c0992bdf96751354680985a7c4825d6"
+          "0x00000000000000000000000060c11aef81da1d070110c58eb547991a8968d8c0"
         ],
         "data": "0x",
-        "logIndex": 3,
-        "blockHash": "0xd3c44d973e35be425f985218a6a529e17cc0841276ceb1e4783c0b4559b2d737"
+        "logIndex": 0,
+        "blockHash": "0x461876c8cb198c2dec8c382b61674b819e7ecae39e98e0fe778e640c18e370ef"
       },
       {
-        "transactionIndex": 5,
-        "blockNumber": 43363069,
-        "transactionHash": "0x6a40dd318c6c501b5fdfc60ea0001cf61458a57e494eb36462787b66afb10d52",
-        "address": "0x070127AAd47c3737bc3b2FF3ca5FCA372a87c532",
+        "transactionIndex": 1,
+        "blockNumber": 43512559,
+        "transactionHash": "0x1df90a119afc60cb5fc6024c43c88ed802f0fcfee46cf24eaec6c2cdaad94f7f",
+        "address": "0xEF417b2D20ffB2e5625fF89F1Ca5923055e6A98F",
         "topics": [
           "0x2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d",
           "0x0000000000000000000000000000000000000000000000000000000000000000",
@@ -984,14 +1427,14 @@
           "0x000000000000000000000000f4903f4544558515b26ec4c6d6e91d2293b27275"
         ],
         "data": "0x",
-        "logIndex": 4,
-        "blockHash": "0xd3c44d973e35be425f985218a6a529e17cc0841276ceb1e4783c0b4559b2d737"
+        "logIndex": 1,
+        "blockHash": "0x461876c8cb198c2dec8c382b61674b819e7ecae39e98e0fe778e640c18e370ef"
       },
       {
-        "transactionIndex": 5,
-        "blockNumber": 43363069,
-        "transactionHash": "0x6a40dd318c6c501b5fdfc60ea0001cf61458a57e494eb36462787b66afb10d52",
-        "address": "0x070127AAd47c3737bc3b2FF3ca5FCA372a87c532",
+        "transactionIndex": 1,
+        "blockNumber": 43512559,
+        "transactionHash": "0x1df90a119afc60cb5fc6024c43c88ed802f0fcfee46cf24eaec6c2cdaad94f7f",
+        "address": "0xEF417b2D20ffB2e5625fF89F1Ca5923055e6A98F",
         "topics": [
           "0x2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d",
           "0xa49807205ce4d355092ef5a8a18f56e8913cf4a201fbe287825b095693c21775",
@@ -999,29 +1442,44 @@
           "0x000000000000000000000000f4903f4544558515b26ec4c6d6e91d2293b27275"
         ],
         "data": "0x",
-        "logIndex": 5,
-        "blockHash": "0xd3c44d973e35be425f985218a6a529e17cc0841276ceb1e4783c0b4559b2d737"
+        "logIndex": 2,
+        "blockHash": "0x461876c8cb198c2dec8c382b61674b819e7ecae39e98e0fe778e640c18e370ef"
       },
       {
-        "transactionIndex": 5,
-        "blockNumber": 43363069,
-        "transactionHash": "0x6a40dd318c6c501b5fdfc60ea0001cf61458a57e494eb36462787b66afb10d52",
-        "address": "0x070127AAd47c3737bc3b2FF3ca5FCA372a87c532",
+        "transactionIndex": 1,
+        "blockNumber": 43512559,
+        "transactionHash": "0x1df90a119afc60cb5fc6024c43c88ed802f0fcfee46cf24eaec6c2cdaad94f7f",
+        "address": "0xEF417b2D20ffB2e5625fF89F1Ca5923055e6A98F",
+        "topics": [
+          "0x2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d",
+          "0x139c2898040ef16910dc9f44dc697df79363da767d8bc92f2e310312b816e46d",
+          "0x000000000000000000000000f4903f4544558515b26ec4c6d6e91d2293b27275",
+          "0x000000000000000000000000f4903f4544558515b26ec4c6d6e91d2293b27275"
+        ],
+        "data": "0x",
+        "logIndex": 3,
+        "blockHash": "0x461876c8cb198c2dec8c382b61674b819e7ecae39e98e0fe778e640c18e370ef"
+      },
+      {
+        "transactionIndex": 1,
+        "blockNumber": 43512559,
+        "transactionHash": "0x1df90a119afc60cb5fc6024c43c88ed802f0fcfee46cf24eaec6c2cdaad94f7f",
+        "address": "0xEF417b2D20ffB2e5625fF89F1Ca5923055e6A98F",
         "topics": [
           "0xc7f505b2f371ae2175ee4913f4499e1f2633a7b5936321eed1cdaeb6115181d2"
         ],
         "data": "0x0000000000000000000000000000000000000000000000000000000000000001",
-        "logIndex": 6,
-        "blockHash": "0xd3c44d973e35be425f985218a6a529e17cc0841276ceb1e4783c0b4559b2d737"
+        "logIndex": 4,
+        "blockHash": "0x461876c8cb198c2dec8c382b61674b819e7ecae39e98e0fe778e640c18e370ef"
       }
     ],
-    "blockNumber": 43363069,
-    "cumulativeGasUsed": "765879",
+    "blockNumber": 43512559,
+    "cumulativeGasUsed": "645230",
     "status": 1,
     "byzantium": true
   },
   "args": [
-    "0x184b72289c0992BDf96751354680985a7C4825d6",
+    "0x60C11Aef81da1d070110c58eb547991a8968d8c0",
     "0xc4d66de8000000000000000000000000f4903f4544558515b26ec4c6d6e91d2293b27275"
   ],
   "numDeployments": 1,
@@ -1035,7 +1493,7 @@
       "0xf4903f4544558515b26ec4C6D6e91D2293b27275"
     ]
   },
-  "implementation": "0x184b72289c0992BDf96751354680985a7C4825d6",
+  "implementation": "0x60C11Aef81da1d070110c58eb547991a8968d8c0",
   "devdoc": {
     "details": "This contract implements an upgradeable proxy. It is upgradeable because calls are delegated to an implementation address that can be changed. This address is stored in storage in the location specified by https://eips.ethereum.org/EIPS/eip-1967[EIP1967], so that it doesn't conflict with the storage layout of the implementation behind the proxy.",
     "kind": "dev",

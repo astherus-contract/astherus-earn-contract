@@ -18,7 +18,8 @@
   },
   "resolutions": {
     "ethers": "^5.7.2",
-    "hardhat-deploy": "^0.12.1"
+    "hardhat-deploy": "^0.12.1",
+    "hardhat": "^2.22.9"
   },
   "devDependencies": {
     "@babel/core": "^7.23.9",
@@ -62,17 +63,20 @@
     "hardhat-deploy-ethers": "^0.4.2",
     "@nomicfoundation/hardhat-verify": "^2.0.9",
     "prompt-sync": "^4.2.0",
-    "shelljs": "^0.8.5"
+    "shelljs": "^0.8.5",
+    "unchecked-counter": "^1.0.0"
   },
   "pnpm": {
     "overrides": {
       "ethers": "^5.7.2",
-      "hardhat-deploy": "^0.12.1"
+      "hardhat-deploy": "^0.12.1",
+      "hardhat": "^2.22.9"
     }
   },
   "overrides": {
     "ethers": "^5.7.2",
-    "hardhat-deploy": "^0.12.1"
+    "hardhat-deploy": "^0.12.1",
+    "hardhat": "^2.22.9"
   },
   "engines": {
     "node": ">=18.16.0"

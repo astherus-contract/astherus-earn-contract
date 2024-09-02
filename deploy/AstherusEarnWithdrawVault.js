@@ -8,14 +8,11 @@ module.exports = async function ({
     const {deploy} = deployments;
     const {deployer, multisig} = await getNamedAccounts();
 
-    const BNB_CHAIN_TESTNET_WRAPPED = '0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd';
-    const BNB_CHAIN_WRAPPED = '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c';
     const AstherusEarnTimelock = await ethers.getContract('AstherusEarnTimelock');
-    const AstherusEarnWithdrawVault = await ethers.getContract('AstherusEarnWithdrawVault');
 
-    await deploy('AstherusEarnVault', {
+    await deploy('AstherusEarnWithdrawVault', {
             from: deployer,
-        args: [BNB_CHAIN_TESTNET_WRAPPED, AstherusEarnTimelock.address, AstherusEarnWithdrawVault.address],
+        args: [AstherusEarnTimelock.address],
             log: true, 
             skipIfAlreadyDeployed: false,
             proxy: {
@@ -40,5 +37,5 @@ module.exports = async function ({
     );
 };
 
-module.exports.tags = ['AstherusEarnVault'];
+module.exports.tags = ['AstherusEarnWithdrawVault'];
 module.exports.dependencies = [];

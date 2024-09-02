@@ -12,12 +12,13 @@ module.exports = async function ({
     const BNB_CHAIN_WRAPPED = '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c';
     const AstherusEarnVaultImplementation = await ethers.getContract('AstherusEarnVault_Implementation');
     const AstherusEarnTimelock = await ethers.getContract('AstherusEarnTimelock');
+    const AstherusEarnWithdrawVault = await ethers.getContract('AstherusEarnWithdrawVault');
 
     await run(
         "verify:verify", 
         {
             address: AstherusEarnVaultImplementation.address,
-            constructorArguments: [BNB_CHAIN_TESTNET_WRAPPED, AstherusEarnTimelock.address]
+            constructorArguments: [BNB_CHAIN_TESTNET_WRAPPED, AstherusEarnTimelock.address, AstherusEarnWithdrawVault.address]
         }
     );
 };

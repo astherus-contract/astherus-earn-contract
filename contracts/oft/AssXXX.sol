@@ -10,7 +10,7 @@ import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 //contract AssXXX is OFT, ERC20Burnable, AccessControl, ERC20Pausable, Ownable {
 contract AssXXX is OFT, AccessControl, Pausable {
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
-    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    bytes32 public constant MINTER_AND_BURN_ROLE = keccak256("MINTER_AND_BURN_ROLE");
 
     constructor(
         string memory _name,
@@ -30,8 +30,13 @@ contract AssXXX is OFT, AccessControl, Pausable {
         _unpause();
     }
 
-    function mint(address to, uint256 amount) external onlyRole(MINTER_ROLE) {
+    function mint(address to, uint256 amount) external onlyRole(MINTER_AND_BURN_ROLE) {
         require(amount > 0, "ERC20: mint zero amount");
         _mint(to, amount);
+    }
+
+    function burn(address from, uint256 amount) external onlyRole(MINTER_AND_BURN_ROLE) {
+        require(amount > 0, "ERC20: burn zero amount");
+        _burn(from, amount);
     }
 }
