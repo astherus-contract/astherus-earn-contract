@@ -104,3 +104,10 @@ approve: 授权spender(AstherusEarnVault合约地址)使用多少数量的token
 ## XXX 合约
 approve: 授权spender(AstherusEarnVault合约地址)使用多少数量的token
 
+
+## AstherusEarnVault
+grantRole: 把 bot(后端发起交易地址)地址加到 BOT_ROLE 角色下
+
+
+#
+[{"assTokenAddress":"0x9746235a82B3ca8D28E25CeD9344f04dC5ff42f0","sourceTokenAmount":"1000000000000000000","requestWithdrawNo":2,"receipt":"0xf4903f4544558515b26ec4C6D6e91D2293b27275"}]

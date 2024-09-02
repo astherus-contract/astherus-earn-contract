@@ -19,7 +19,7 @@ task("upgrade:AstherusEarnWithdrawVault", "update AstherusEarnWithdrawVault cont
         }
 
         const ABI = '[{"inputs":[{"internalType":"address","name":"target","type":"address"},{"internalType":"string","name":"functionSignature","type":"string"},{"internalType":"bytes","name":"data","type":"bytes"}],"name":"executeTask","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"target","type":"address"},{"internalType":"string","name":"functionSignature","type":"string"},{"internalType":"bytes","name":"data","type":"bytes"}],"name":"scheduleTask","outputs":[],"stateMutability":"nonpayable","type":"function"}]';
-        const target = AstherusEarnVault.address;
+        const target = AstherusEarnWithdrawVault.address;
         const functionSignature = 'upgradeToAndCall(address,bytes)';
         const data = '0x' + AstherusEarnWithdrawVault.interface.encodeFunctionData('upgradeToAndCall', [AstherusEarnWithdrawVaultImplementation.address, '0x']).substring(10);
         console.log(`ABI: ${ABI}`);

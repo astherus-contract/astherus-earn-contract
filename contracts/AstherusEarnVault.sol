@@ -13,7 +13,6 @@ import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol
 
 import {ZERO, ONE, UC, uc, into} from "unchecked-counter/src/UC.sol";
 import "./interface/IAss.sol";
-import "./interface/IWBNB.sol";
 import "./interface/IAstherusEarnWithdrawVault.sol";
 
 
@@ -21,7 +20,7 @@ contract AstherusEarnVault is Initializable, PausableUpgradeable, AccessControlE
 
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant PAUSE_ROLE = keccak256("PAUSE_ROLE");
-    bytes32 public constant VAULT_ROLE = keccak256("VAULT_ROLE");
+    bytes32 public constant BOT_ROLE = keccak256("BOT_ROLE");
 
 
     using Address for address payable;
@@ -36,7 +35,7 @@ contract AstherusEarnVault is Initializable, PausableUpgradeable, AccessControlE
     event TransferToCeffu(address indexed sourceTokenAddress, uint256 sourceTokenAmount, address sefu);
     event UploadExchangeRate(address indexed assTokenAddress, uint256 assToSourceExchangeRate, uint256 exchangeRateExpiredTimestamp);
     event RequestWithdraw(address indexed from, address indexed assTokenAddress, uint256 assTokenAmount, uint256 requestWithdrawNo);
-    event DistributeWithdraw(address indexed assTokenAddress, uint256 assTokenAmount, address indexed sourceTokenAddress, uint256 sourceTokenAmount, uint256 requestWithdrawNo);
+    event DistributeWithdraw(address indexed assTokenAddress, address indexed sourceTokenAddress, uint256 assTokenAmount, uint256 sourceTokenAmount, uint256 requestWithdrawNo);
     event ClaimWithdraw(address indexed receipt, address indexed assTokenAddress, address indexed sourceTokenAddress, uint256 assTokenAmount, uint256 sourceTokenAmount, uint256 requestWithdrawNo);
 
 
@@ -62,7 +61,6 @@ contract AstherusEarnVault is Initializable, PausableUpgradeable, AccessControlE
 
     struct DistributeWithdrawInfo {
         address assTokenAddress;
-        uint256 assTokenAmount;
         uint256 sourceTokenAmount;
         uint256 requestWithdrawNo;
         address receipt;
@@ -244,7 +242,7 @@ contract AstherusEarnVault is Initializable, PausableUpgradeable, AccessControlE
         emit MintAssXXX(msg.sender, sourceTokenAddress, token.assTokenAddress, amountIn, assXXXAmount, token.assToSourceExchangeRate);
     }
 
-    function transferToCeffu(address[] calldata assTokenAddressList) external nonReentrant onlyRole(VAULT_ROLE) {
+    function transferToCeffu(address[] calldata assTokenAddressList) external nonReentrant onlyRole(BOT_ROLE) {
         uint256 length = assTokenAddressList.length;
         for (UC i = ZERO; i < uc(length); i = i + ONE) {
             address assTokenAddress = assTokenAddressList[i.into()];
@@ -258,7 +256,7 @@ contract AstherusEarnVault is Initializable, PausableUpgradeable, AccessControlE
         }
     }
 
-    function uploadExchangeRate(ExchangeRateInfo[] calldata exchangeRateInfoList) external nonReentrant onlyRole(VAULT_ROLE) {
+    function uploadExchangeRate(ExchangeRateInfo[] calldata exchangeRateInfoList) external nonReentrant onlyRole(BOT_ROLE) {
         uint256 length = exchangeRateInfoList.length;
         for (UC i = ZERO; i < uc(length); i = i + ONE) {
             ExchangeRateInfo calldata exchangeRateInfo = exchangeRateInfoList[i.into()];
@@ -281,7 +279,7 @@ contract AstherusEarnVault is Initializable, PausableUpgradeable, AccessControlE
         require(token.withdrawEnabled == true, "pause withdraw");
 
         uint256 assTokenBalance = IERC20(assTokenAddress).balanceOf(msg.sender);
-        require(assTokenAmount >= assTokenBalance, "insufficient balance");
+        require(assTokenAmount <= assTokenBalance, "insufficient balance");
 
         _lock(msg.sender, assTokenAddress, assTokenAmount);
 
@@ -298,7 +296,7 @@ contract AstherusEarnVault is Initializable, PausableUpgradeable, AccessControlE
         emit RequestWithdraw(msg.sender, assTokenAddress, assTokenAmount, requestWithdrawMaxNo);
     }
 
-    function distributeWithdraw(DistributeWithdrawInfo[] calldata distributeWithdrawInfoList) external nonReentrant whenNotPaused onlyRole(VAULT_ROLE) {
+    function distributeWithdraw(DistributeWithdrawInfo[] calldata distributeWithdrawInfoList) external nonReentrant whenNotPaused onlyRole(BOT_ROLE) {
         uint256 length = distributeWithdrawInfoList.length;
         for (UC i = ZERO; i < uc(length); i = i + ONE) {
             DistributeWithdrawInfo calldata distributeWithdrawInfo = distributeWithdrawInfoList[i.into()];
@@ -313,7 +311,9 @@ contract AstherusEarnVault is Initializable, PausableUpgradeable, AccessControlE
             requestWithdrawInfo.sourceTokenAmount = distributeWithdrawInfo.sourceTokenAmount;
             requestWithdrawInfo.canClaimWithdraw = true;
 
-            emit ClaimWithdraw(msg.sender, requestWithdrawInfo.assTokenAddress, token.sourceTokenAddress, requestWithdrawInfo.assTokenAmount, requestWithdrawInfo.sourceTokenAmount, distributeWithdrawInfo.requestWithdrawNo);
+            IAss(token.assTokenAddress).burn(address(this), requestWithdrawInfo.assTokenAmount);
+
+            emit DistributeWithdraw(requestWithdrawInfo.assTokenAddress, token.sourceTokenAddress, requestWithdrawInfo.assTokenAmount, requestWithdrawInfo.sourceTokenAmount, distributeWithdrawInfo.requestWithdrawNo);
         }
     }
 
@@ -347,7 +347,6 @@ contract AstherusEarnVault is Initializable, PausableUpgradeable, AccessControlE
             IERC20(token).safeTransferFrom(from, address(this), amount);
         } else {
             require(msg.value >= amount, "insufficient balance");
-            IWBNB(token).deposit{value: amount}();
         }
     }
 
@@ -356,17 +355,21 @@ contract AstherusEarnVault is Initializable, PausableUpgradeable, AccessControlE
     }
 
     function _transferToCeffu(address receipt, address token) private returns (uint256){
-        uint256 amount = IERC20(token).balanceOf(address(this));
-        if (amount <= 0) {
+        if (token != NATIVE_WRAPPED) {
+            uint256 amount = IERC20(token).balanceOf(address(this));
+            if (amount <= 0) {
+                return amount;
+            }
+            IERC20(token).safeTransfer(receipt, amount);
+            return amount;
+        } else {
+            uint256 amount = address(this).balance;
+            if (amount <= 0) {
+                return amount;
+            }
+            payable(receipt).sendValue(amount);
             return amount;
         }
-        if (token != NATIVE_WRAPPED) {
-            IERC20(token).safeTransfer(receipt, amount);
-        } else {
-            IWBNB(token).withdraw(amount);
-            payable(receipt).sendValue(amount);
-        }
-        return amount;
     }
 
     function _withdraw(address receipt, address token, uint256 amount) private {
