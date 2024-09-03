@@ -8,9 +8,11 @@ import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 import {ERC20Pausable} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
+import {ERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
+
 
 //contract AssXXX is OFT, ERC20Burnable, AccessControl, ERC20Pausable, Ownable {
-contract AssXXX is OFT, AccessControl, ERC20Pausable {
+contract AssXXX is OFT, AccessControl, ERC20Pausable, ERC20Permit {
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant MINTER_AND_BURN_ROLE = keccak256("MINTER_AND_BURN_ROLE");
 
@@ -19,7 +21,7 @@ contract AssXXX is OFT, AccessControl, ERC20Pausable {
         string memory _symbol,
         address _lzEndpoint,
         address _delegate
-    ) OFT(_name, _symbol, _lzEndpoint, _delegate) Ownable(_delegate) {
+    ) OFT(_name, _symbol, _lzEndpoint, _delegate) Ownable(_delegate) ERC20Permit(_name){
         _grantRole(DEFAULT_ADMIN_ROLE, _delegate);
         _grantRole(ADMIN_ROLE, _delegate);
     }
