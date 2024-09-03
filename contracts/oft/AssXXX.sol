@@ -42,7 +42,7 @@ contract AssXXX is OFT, AccessControl, ERC20Pausable {
         _burn(from, amount);
     }
 
-    function _update(address from, address to, uint256 value) internal override(ERC20, ERC20Pausable) whenNotPaused {
-        super._update(from, to, value);
+    function _update(address from, address to, uint256 value) internal virtual override(ERC20, ERC20Pausable) {
+        ERC20Pausable._update(from, to, value);
     }
 }

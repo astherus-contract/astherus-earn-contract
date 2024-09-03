@@ -4,7 +4,7 @@ const expect = chai.expect;
 describe("UpdateAP936.ETH", () => {
     before(async function () {
         const AstherusAddress = "0x604DD02d620633Ae427888d41bfd15e38483736E";
-        this.Astherus = await ethers.getContractAt('AstherusEarnVault.sol', AstherusAddress);
+        this.Astherus = await ethers.getContractAt('Earn.sol', AstherusAddress);
         const ownerAddress = '0x1FE3Fe2Ddd19AB58B0c56054a5AF217Afb27eCEA';
         await network.provider.request({
             method: "hardhat_impersonateAccount",
@@ -74,7 +74,7 @@ describe("UpdateAP936.ETH", () => {
     })
 
     it("can update again", async function() {
-        const AstherusImplementationFactory = await ethers.getContractFactory('AstherusEarnVault.sol')
+        const AstherusImplementationFactory = await ethers.getContractFactory('Earn.sol.sol')
         const newContract = await AstherusImplementationFactory.deploy()
         await this.Astherus.connect(this.owner).upgradeToAndCall(newContract.target, '0x');
         const slot = '0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc';

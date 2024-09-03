@@ -1,2 +1,2 @@
-require('./UpgradeAstherusEarnVault.js');
-require('./UpgradeAstherusEarnWithdrawVault.js');
+require('./UpgradeEarn.js');
+require('./UpgradeWithdrawVault.js');

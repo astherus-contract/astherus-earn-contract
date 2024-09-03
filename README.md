@@ -24,38 +24,38 @@ npx hardhat export-abi
 
 # 时间锁合约
 ```shell
-npx hardhat deploy --network bscTestnet --tags AstherusEarnTimelock
+npx hardhat deploy --network bscTestnet --tags Timelock
 ```
 
-### 代理合约部署[AstherusEarnWithdrawVault]
+### 代理合约和逻辑合约部署[WithdrawVault]
 ```shell
-npx hardhat deploy --network bscTestnet --tags AstherusEarnWithdrawVault
+npx hardhat deploy --network bscTestnet --tags WithdrawVault
 ```
 
 
-### 代理合约部署[AstherusEarnVault]
+### 代理合约和逻辑主合约部署[Earn]
 ```shell
-npx hardhat deploy --network bscTestnet --tags AstherusEarnVault
+npx hardhat deploy --network bscTestnet --tags Earn
 ```
 
 # 验证合约
 ```shell
-npx hardhat deploy --network bscTestnet --tags AstherusEarnTimelockVerify
+npx hardhat deploy --network bscTestnet --tags TimelockVerify
 ```
 ```shell
-npx hardhat deploy --network bscTestnet --tags AstherusEarnWithdrawVaultVerify
+npx hardhat deploy --network bscTestnet --tags WithdrawVaultVerify
 ```
 ```shell
-npx hardhat deploy --network bscTestnet --tags AstherusEarnVaultVerify
+npx hardhat deploy --network bscTestnet --tags EarnVerify
 ```
 
 # 合约升级
 ```shell
-hardhat deploy --network bscTestnet --tags AstherusEarnWithdrawVaultImplementation
+hardhat deploy --network bscTestnet --tags WithdrawVaultImplementation
 ```
 
 ```shell
-hardhat deploy --network bscTestnet --tags AstherusEarnVaultImplementation
+hardhat deploy --network bscTestnet --tags EarnImplementation
 ```
 
 # AssXXX 部署
@@ -89,26 +89,40 @@ hardhat deploy --network bscTestnet-USDC --tags USDCTest
 
 # 测试合约升级
 ```shell
-npx hardhat upgrade:AstherusEarnWithdrawVault --network bscTestnet
+npx hardhat upgrade:WithdrawVault --network bscTestnet
 ```
 
 ```shell
-npx hardhat upgrade:AstherusEarnVault --network bscTestnet
+npx hardhat upgrade:Earn --network bscTestnet
 ```
 
 # 分配权限
 ## AssXXX 合约
-grantRole: 把 AstherusEarnVault合约地址加到 MINTER_AND_BURN_ROLE 角色下
-approve: 授权spender(AstherusEarnVault合约地址)使用多少数量的token
+grantRole: 把 Earn合约地址加到 MINTER_AND_BURN_ROLE 角色下
+approve: 授权spender(Earn合约地址)使用多少数量的token
 
 ## XXX 合约
-approve: 授权spender(AstherusEarnVault合约地址)使用多少数量的token
+approve: 授权spender(Earn合约地址)使用多少数量的token
 
-
-## AstherusEarnVault
+## Earn
 grantRole: 把 bot(后端发起交易地址)地址加到 BOT_ROLE 角色下
 
 
-# distributeWithdraw 传给合约参数例子
-[{"assTokenAddress":"0x9746235a82B3ca8D28E25CeD9344f04dC5ff42f0","sourceTokenAmount":"1000000000000000000","requestWithdrawNo":2,"receipt":"0xf4903f4544558515b26ec4C6D6e91D2293b27275"}]
-[{"assTokenAddress":"0x38AA597c1d77de7Cc03170106D8FC21eb158BC21","sourceTokenAmount":"100000000000000","requestWithdrawNo":3,"receipt":"0xf4903f4544558515b26ec4C6D6e91D2293b27275"}]
+# 测试操作流程
+## 1.[Earn 合约] grantRole: 把 bot(后端发起交易地址)地址加到 BOT_ROLE 角色下
+## 2.[AssXXX 合约] 部署AssXXX合约
+### 2.1 grantRole: 把 Earn合约地址加到 MINTER_AND_BURN_ROLE 角色下
+### 2.2 approve: 授权spender(Earn合约地址)使用多少数量的token
+## 3.addToken
+## 4. deposit 或者  depositNative
+## 5. transferToCeffu
+## 6. uploadExchangeRate
+### 例如 
+[{"assTokenAddress":"0x3f41a2d00D9D294B4097B68EbFBE7dfE955fc3Cc","assToSourceExchangeRate":"100000000","exchangeRateExpiredTimestamp":"1735660800"}]
+## 7. requestWithdraw
+## 7. 向Ceffu提现
+## 9. distributeWithdraw
+### 例子 
+[{"assTokenAddress":"0x3f41a2d00D9D294B4097B68EbFBE7dfE955fc3Cc","sourceTokenAmount":"100000000000000000","requestWithdrawNo":1,"receipt":"0xf4903f4544558515b26ec4C6D6e91D2293b27275"}]
+[{"assTokenAddress":"0xbb8f7E2321c4a7D8b9B432792103A5d48A74ace8","sourceTokenAmount":"10000000000000000","requestWithdrawNo":2,"receipt":"0xf4903f4544558515b26ec4C6D6e91D2293b27275"}]
+## 10. claimWithdraw

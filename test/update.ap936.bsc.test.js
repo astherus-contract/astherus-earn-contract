@@ -4,7 +4,7 @@ const expect = chai.expect;
 describe("UpdateAP936.BSC", () => {
     before(async function () {
         const AstherusAddress = "0x128463A60784c4D3f46c23Af3f65Ed859Ba87974";
-        this.Astherus = await ethers.getContractAt('AstherusEarnVault.sol', AstherusAddress);
+        this.Astherus = await ethers.getContractAt('Earn.sol', AstherusAddress);
         const ownerAddress = '0xa8c0c6ee62f5ad95730fe23ccf37d1c1ffaa1c3f';
         await network.provider.request({
             method: "hardhat_impersonateAccount",
@@ -67,7 +67,7 @@ describe("UpdateAP936.BSC", () => {
     })
 
     it("can update again", async function() {
-        const AstherusImplementationFactory = await ethers.getContractFactory('AstherusEarnVault.sol')
+        const AstherusImplementationFactory = await ethers.getContractFactory('Earn.sol')
         const newContract = await AstherusImplementationFactory.deploy()
         await this.Astherus.connect(this.owner).upgradeToAndCall(newContract.target, '0x');
         const slot = '0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc';
