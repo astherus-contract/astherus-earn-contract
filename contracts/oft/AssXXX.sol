@@ -13,9 +13,7 @@ import {ERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20P
 
 import "./TransferLimiter.sol";
 
-//contract AssXXX is OFT, ERC20Burnable, AccessControl, ERC20Pausable, Ownable {
-contract AssXXX is TransferLimiter, OFT, AccessControl, ERC20Pausable {
-contract AssXXX is OFT, AccessControl, ERC20Pausable, ERC20Permit {
+contract AssXXX is TransferLimiter, OFT, AccessControl, ERC20Pausable, ERC20Permit {
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant MINTER_AND_BURN_ROLE = keccak256("MINTER_AND_BURN_ROLE");
 
@@ -25,7 +23,7 @@ contract AssXXX is OFT, AccessControl, ERC20Pausable, ERC20Permit {
         TransferLimit[] memory _transferLimitConfigs,
         address _lzEndpoint,
         address _owner
-    ) OFT(_name, _symbol, _lzEndpoint, _owner) Ownable(_owner) {
+    ) OFT(_name, _symbol, _lzEndpoint, _owner) Ownable(_owner) ERC20Permit(_name){
         _grantRole(DEFAULT_ADMIN_ROLE, _owner);
         _grantRole(ADMIN_ROLE, _owner);
 
