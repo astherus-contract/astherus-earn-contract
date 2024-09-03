@@ -107,9 +107,14 @@ approve: 授权spender(Earn合约地址)使用多少数量的token
 ## Earn
 grantRole: 把 bot(后端发起交易地址)地址加到 BOT_ROLE 角色下
 
+## WithdrawVault 合约
+grantRole: 把 Earn合约地址加到 TRANSFER_ROLE 角色下
 
 # 测试操作流程
-## 1.[Earn 合约] grantRole: 把 bot(后端发起交易地址)地址加到 BOT_ROLE 角色下
+## 1. 授权
+[Earn 合约] grantRole: 把 bot(后端发起交易地址)地址加到 BOT_ROLE 角色下
+
+[WithdrawVault 合约]  grantRole: 把 Earn合约地址加到 TRANSFER_ROLE 角色下
 ## 2.[AssXXX 合约] 部署AssXXX合约
 ### 2.1 grantRole: 把 Earn合约地址加到 MINTER_AND_BURN_ROLE 角色下
 ### 2.2 approve: 授权spender(Earn合约地址)使用多少数量的token
@@ -117,12 +122,13 @@ grantRole: 把 bot(后端发起交易地址)地址加到 BOT_ROLE 角色下
 ## 4. deposit 或者  depositNative
 ## 5. transferToCeffu
 ## 6. uploadExchangeRate
-### 例如 
+### 例子
 [{"assTokenAddress":"0x3f41a2d00D9D294B4097B68EbFBE7dfE955fc3Cc","assToSourceExchangeRate":"100000000","exchangeRateExpiredTimestamp":"1735660800"}]
 ## 7. requestWithdraw
-## 7. 向Ceffu提现
+## 8. 向Ceffu提现
 ## 9. distributeWithdraw
 ### 例子 
 [{"assTokenAddress":"0x3f41a2d00D9D294B4097B68EbFBE7dfE955fc3Cc","sourceTokenAmount":"100000000000000000","requestWithdrawNo":1,"receipt":"0xf4903f4544558515b26ec4C6D6e91D2293b27275"}]
+
 [{"assTokenAddress":"0xbb8f7E2321c4a7D8b9B432792103A5d48A74ace8","sourceTokenAmount":"10000000000000000","requestWithdrawNo":2,"receipt":"0xf4903f4544558515b26ec4C6D6e91D2293b27275"}]
 ## 10. claimWithdraw
