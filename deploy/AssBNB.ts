@@ -25,6 +25,7 @@ const deploy: DeployFunction = async (hre) => {
         args: [
             name, // name
             symbol, // symbol
+            [], //_transferLimitConfigs
             endpointV2Deployment.address, // LayerZero's EndpointV2 address
             deployer, // owner
         ],
