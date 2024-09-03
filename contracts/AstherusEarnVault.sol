@@ -86,14 +86,12 @@ contract AstherusEarnVault is Initializable, PausableUpgradeable, AccessControlE
     mapping(address => mapping(uint256 => RequestWithdrawInfo)) public requestWithdraws;
 
     uint256 private requestWithdrawMaxNo;
-    IAstherusEarnWithdrawVault private _withdrawVault;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor(address nativeWrapped, address timelockAddress, address withdrawVault) {
         NATIVE_WRAPPED = nativeWrapped;
         TIMELOCK_ADDRESS = timelockAddress;
         WITHDRAW_VAULT = withdrawVault;
-        _withdrawVault = IAstherusEarnWithdrawVault(withdrawVault);
         _disableInitializers();
     }
 
@@ -221,7 +219,7 @@ contract AstherusEarnVault is Initializable, PausableUpgradeable, AccessControlE
 
     function _mintAssXXX(address sourceTokenAddress, uint256 amountIn) private {
         require(sourceTokenAddress != address(0), "sourceTokenAddress cannot be a zero address");
-        require(amountIn > 0, 'invalid amount');
+        require(amountIn > 0, "invalid amount");
 
         address assTokenAddress = supportSourceToken[sourceTokenAddress];
         require(assTokenAddress != address(0), "currency not support");
@@ -272,7 +270,7 @@ contract AstherusEarnVault is Initializable, PausableUpgradeable, AccessControlE
 
     function requestWithdraw(address assTokenAddress, uint256 assTokenAmount) external nonReentrant whenNotPaused {
         require(assTokenAddress != address(0), "sourceTokenAddress cannot be a zero address");
-        require(assTokenAmount > 0, 'invalid amount');
+        require(assTokenAmount > 0, "invalid amount");
 
         Token storage token = supportAssToken[assTokenAddress];
         require(token.assTokenAddress != address(0), "currency not support");
@@ -329,12 +327,16 @@ contract AstherusEarnVault is Initializable, PausableUpgradeable, AccessControlE
             require(token.assTokenAddress != address(0), "currency not support");
             require(token.withdrawEnabled == true, "pause withdraw");
 
+            address assTokenAddress = requestWithdrawInfo.assTokenAddress;
+            uint256 assTokenAmount = requestWithdrawInfo.assTokenAmount;
+            uint256 sourceTokenAmount = requestWithdrawInfo.sourceTokenAmount;
+
             delete requestWithdraws[msg.sender][requestWithdrawNo];
 
-            _withdraw(msg.sender, token.sourceTokenAddress, requestWithdrawInfo.sourceTokenAmount);
-            sourceTokenTreasury[token.sourceTokenAddress] -= requestWithdrawInfo.sourceTokenAmount;
+            _withdraw(msg.sender, token.sourceTokenAddress, sourceTokenAmount);
+            sourceTokenTreasury[token.sourceTokenAddress] -= sourceTokenAmount;
 
-            emit ClaimWithdraw(msg.sender, requestWithdrawInfo.assTokenAddress, token.sourceTokenAddress, requestWithdrawInfo.assTokenAmount, requestWithdrawInfo.sourceTokenAmount, requestWithdrawNo);
+            emit ClaimWithdraw(msg.sender, assTokenAddress, token.sourceTokenAddress, assTokenAmount, sourceTokenAmount, requestWithdrawNo);
         }
     }
 
@@ -374,9 +376,9 @@ contract AstherusEarnVault is Initializable, PausableUpgradeable, AccessControlE
 
     function _withdraw(address receipt, address token, uint256 amount) private {
         if (token != NATIVE_WRAPPED) {
-            _withdrawVault.transfer(receipt, token, amount);
+            IAstherusEarnWithdrawVault(WITHDRAW_VAULT).transfer(receipt, token, amount);
         } else {
-            _withdrawVault.transferNative(receipt, amount);
+            IAstherusEarnWithdrawVault(WITHDRAW_VAULT).transferNative(receipt, amount);
         }
     }
 }

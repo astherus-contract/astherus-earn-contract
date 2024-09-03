@@ -109,5 +109,6 @@ approve: 授权spender(AstherusEarnVault合约地址)使用多少数量的token
 grantRole: 把 bot(后端发起交易地址)地址加到 BOT_ROLE 角色下
 
 
-#
+# distributeWithdraw 传给合约参数例子
 [{"assTokenAddress":"0x9746235a82B3ca8D28E25CeD9344f04dC5ff42f0","sourceTokenAmount":"1000000000000000000","requestWithdrawNo":2,"receipt":"0xf4903f4544558515b26ec4C6D6e91D2293b27275"}]
+[{"assTokenAddress":"0x38AA597c1d77de7Cc03170106D8FC21eb158BC21","sourceTokenAmount":"100000000000000","requestWithdrawNo":3,"receipt":"0xf4903f4544558515b26ec4C6D6e91D2293b27275"}]

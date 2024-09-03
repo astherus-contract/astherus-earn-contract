@@ -60,7 +60,7 @@ contract AstherusEarnWithdrawVault is Initializable, PausableUpgradeable, Access
     function _authorizeUpgrade(address newImplementation) internal onlyTImelock override {}
 
     function transferNative(address receipt, uint256 amount) external nonReentrant whenNotPaused onlyRole(TRANSFER_ROLE) {
-        require(amount > 0, 'invalid amount');
+        require(amount > 0, "invalid amount");
 
         payable(receipt).sendValue(amount);
 
@@ -68,7 +68,7 @@ contract AstherusEarnWithdrawVault is Initializable, PausableUpgradeable, Access
     }
 
     function transfer(address receipt, address token, uint256 amount) external nonReentrant whenNotPaused onlyRole(TRANSFER_ROLE) {
-        require(amount > 0, 'invalid amount');
+        require(amount > 0, "invalid amount");
         require(IERC20(token).balanceOf(address(this)) >= amount, "insufficient balance");
 
         IERC20(token).safeTransfer(receipt, amount);
