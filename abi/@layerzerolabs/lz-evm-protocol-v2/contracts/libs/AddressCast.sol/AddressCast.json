@@ -1,0 +1,12 @@
+[
+  {
+    "inputs": [],
+    "name": "AddressCast_InvalidAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "AddressCast_InvalidSizeForAddress",
+    "type": "error"
+  }
+]
