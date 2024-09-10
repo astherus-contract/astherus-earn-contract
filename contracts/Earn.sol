@@ -299,7 +299,8 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
             require(token.withdrawEnabled == true, "pause withdraw");
 
             RequestWithdrawInfo storage requestWithdrawInfo = requestWithdraws[distributeWithdrawInfo.receipt][distributeWithdrawInfo.requestWithdrawNo];
-            require(requestWithdrawInfo.assTokenAddress != address(0), "not exist");
+            require(requestWithdrawInfo.assTokenAddress != address(0), "not exist request");
+            require(requestWithdrawInfo.assTokenAddress == distributeWithdrawInfo.assTokenAddress, "unmatched request");
             require(requestWithdrawInfo.canClaimWithdraw == false, "can not claim");
 
             requestWithdrawInfo.sourceTokenAmount = distributeWithdrawInfo.sourceTokenAmount;
