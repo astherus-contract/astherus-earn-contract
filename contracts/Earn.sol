@@ -87,6 +87,10 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor(address nativeWrapped, address timelockAddress, address withdrawVault) {
+        require(nativeWrapped != address(0), "nativeWrapped cannot be a zero address");
+        require(timelockAddress != address(0), "timelockAddress cannot be a zero address");
+        require(withdrawVault != address(0), "withdrawVault cannot be a zero address");
+
         NATIVE_WRAPPED = nativeWrapped;
         TIMELOCK_ADDRESS = timelockAddress;
         WITHDRAW_VAULT = withdrawVault;
@@ -160,6 +164,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         require(token.assTokenAddress != address(0), "not exist");
 
         bool oldDepositEnabled = token.depositEnabled;
+        require(oldDepositEnabled != enabled, "newDepositEnabled can not be equal oldDepositEnabled");
 
         token.depositEnabled = enabled;
 
@@ -173,6 +178,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         require(token.assTokenAddress != address(0), "not exist");
 
         bool oldWithdrawEnabled = token.withdrawEnabled;
+        require(oldWithdrawEnabled != enabled, "newWithdrawEnabled can not be equal oldWithdrawEnabled");
 
         token.withdrawEnabled = enabled;
 
@@ -187,6 +193,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         require(token.assTokenAddress != address(0), "not exist");
 
         address oldCeffuAddress = token.ceffuAddress;
+        require(oldCeffuAddress != ceffuAddress, "newCeffuAddress can not be equal oldCeffuAddress");
 
         token.ceffuAddress = ceffuAddress;
 
@@ -200,6 +207,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         require(token.assTokenAddress != address(0), "not exist");
 
         bool oldTransferToCeffuEnabled = token.transferToCeffuEnabled;
+        require(oldTransferToCeffuEnabled != enabled, "newTransferToCeffuEnabled can not be equal oldTransferToCeffuEnabled");
 
         token.transferToCeffuEnabled = enabled;
 

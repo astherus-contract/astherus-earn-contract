@@ -24,6 +24,7 @@ contract WithdrawVault is Initializable, PausableUpgradeable, AccessControlEnume
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor(address timelockAddress) {
+        require(timelockAddress != address(0), "timelockAddress cannot be a zero address");
         TIMELOCK_ADDRESS = timelockAddress;
         _disableInitializers();
     }
