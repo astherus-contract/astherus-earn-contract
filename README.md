@@ -108,39 +108,39 @@ hardhat deploy --network bscTestnet --tags EarnImplementation
 ```
 
 # AssXXX 部署
-
+## 【注意】每次部署成功之后,生成的AssXXX.json要改成正确的代币名称 比如 AssBTC AssBNB ...
 ```shell
-npx hardhat deploy --network bscTestnet-BTC --tags AssBTC
+npx hardhat deploy --network bscTestnet --tags AssBTC
 ```
 
 ```shell
-npx hardhat deploy --network bscTestnet-BNB --tags AssBNB
+npx hardhat deploy --network bscTestnet --tags AssBNB
 ```
 
 ```shell
-npx hardhat deploy --network bscTestnet-USDT --tags AssUSDT
+npx hardhat deploy --network bscTestnet --tags AssUSDT
 ```
 
 ```shell
-npx hardhat deploy --network bscTestnet-USDC --tags AssUSDC
+npx hardhat deploy --network bscTestnet --tags AssUSDC
 ```
 
 # 部署测试asset BTC BNB USDT USDC
 
 ```shell
-hardhat deploy --network bscTestnet-BNB --tags BNBTest
+hardhat deploy --network bscTestnet --tags BNBTest
 ```
 
 ```shell
-hardhat deploy --network bscTestnet-BTC --tags BTCTest
+hardhat deploy --network bscTestnet --tags BTCTest
 ```
 
 ```shell
-hardhat deploy --network bscTestnet-USDT --tags USDTTest
+hardhat deploy --network bscTestnet --tags USDTTest
 ```
 
 ```shell
-hardhat deploy --network bscTestnet-USDC --tags USDCTest
+hardhat deploy --network bscTestnet --tags USDCTest
 ```
 
 # 测试合约升级
@@ -219,19 +219,19 @@ grantRole: 把 Earn合约地址加到 TRANSFER_ROLE 角色下
 链上跟踪交易  https://dashboard.tenderly.co/tx/bnb-testnet/0xeb394f04f8a578d1bbecbdee25093f98bff892c9289cf7d064a37ab04d36c1cb
 
 ```shell
-npx hardhat deploy --network bscTestnet-USDC --tags AssUSDC
+npx hardhat deploy --network bscTestnet --tags AssUSDC
 ```
 
 ```shell
-npx hardhat deploy --network sepoliaTestnet-USDC --tags AssUSDC
+npx hardhat deploy --network sepoliaTestnet --tags AssUSDC
 ```
 
 ```shell
-npx hardhat deploy --network bscTestnet-USDC --tags AssUSDCVerify
+npx hardhat deploy --network bscTestnet --tags AssUSDCVerify
 ```
 
 ```shell
-npx hardhat deploy --network sepoliaTestnet-USDC --tags AssUSDCVerify
+npx hardhat deploy --network sepoliaTestnet --tags AssUSDCVerify
 ```
 
 ```shell
@@ -242,7 +242,7 @@ npx hardhat lz:oapp:config:init --contract-name AssXXX --oapp-config testnet.lay
 npx hardhat lz:oapp:wire --oapp-config testnet.layerzero.config.ts
 ```
 
-# bscTestnet-USDC AssUSDC
+# bscTestnet AssUSDC
 
 ## 设置setTransferLimitConfigs
 
@@ -253,7 +253,7 @@ npx hardhat lz:oapp:wire --oapp-config testnet.layerzero.config.ts
 
 ![img.png](img.png)
 
-# sepoliaTestnet-USDC AssUSDC
+# sepoliaTestnet AssUSDC
 
 ## 设置setTransferLimitConfigs
 

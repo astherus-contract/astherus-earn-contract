@@ -8,7 +8,7 @@ const name='Astherus AssBNB'
 const symbol='AssBNB'
 
 const deploy: DeployFunction = async (hre) => {
-    const { getNamedAccounts, deployments } = hre
+    const {getNamedAccounts, deployments,ethers} = hre
 
     const { deploy } = deployments
     const { deployer } = await getNamedAccounts()
@@ -20,6 +20,7 @@ const deploy: DeployFunction = async (hre) => {
 
     const endpointV2Deployment = await hre.deployments.get('EndpointV2')
     console.log(`EndpointV2: ${endpointV2Deployment.address}`)
+    const timelock = await ethers.getContract('Timelock');
     const { address } = await deploy(contractName, {
         from: deployer,
         args: [
@@ -27,7 +28,8 @@ const deploy: DeployFunction = async (hre) => {
             symbol, // symbol
             [], //_transferLimitConfigs
             endpointV2Deployment.address, // LayerZero's EndpointV2 address
-            deployer, // owner
+            deployer, // _defaultAdmin
+            timelock.address //timelock
         ],
         log: true,
         skipIfAlreadyDeployed: false,

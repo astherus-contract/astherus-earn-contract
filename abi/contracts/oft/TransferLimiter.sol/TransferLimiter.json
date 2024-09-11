@@ -1,0 +1,209 @@
+[
+  {
+    "inputs": [],
+    "name": "TransferLimitExceeded",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TransferLimitNotSet",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint32",
+        "name": "dstEid",
+        "type": "uint32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "maxDailyTransferAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "singleTransferUpperLimit",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "singleTransferLowerLimit",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "dailyTransferAmountPerAddress",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "dailyTransferAttemptPerAddress",
+        "type": "uint256"
+      }
+    ],
+    "name": "TransferLimitChanged",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "dstEid",
+        "type": "uint32"
+      }
+    ],
+    "name": "dailyTransferAmount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "dstEid",
+        "type": "uint32"
+      }
+    ],
+    "name": "lastUpdatedTime",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "lastUpdatedTime",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "dstEid",
+        "type": "uint32"
+      },
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "lastUserUpdatedTime",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "updatedTime",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "dstEid",
+        "type": "uint32"
+      }
+    ],
+    "name": "transferLimitConfigs",
+    "outputs": [
+      {
+        "internalType": "uint32",
+        "name": "dstEid",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxDailyTransferAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "singleTransferUpperLimit",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "singleTransferLowerLimit",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "dailyTransferAmountPerAddress",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "dailyTransferAttemptPerAddress",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "dstEid",
+        "type": "uint32"
+      },
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "userDailyAttempt",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "attempt",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "dstEid",
+        "type": "uint32"
+      },
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "userDailyTransferAmount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

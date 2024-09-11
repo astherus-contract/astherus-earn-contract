@@ -108,7 +108,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         __UUPSUpgradeable_init();
         __ReentrancyGuard_init();
 
-        _grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
+        _grantRole(DEFAULT_ADMIN_ROLE, TIMELOCK_ADDRESS);
         _grantRole(ADMIN_ROLE, defaultAdmin);
         _grantRole(PAUSE_ROLE, defaultAdmin);
     }

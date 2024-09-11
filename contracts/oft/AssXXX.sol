@@ -22,10 +22,11 @@ contract AssXXX is TransferLimiter, OFT, AccessControl, ERC20Pausable, ERC20Perm
         string memory _symbol,
         TransferLimit[] memory _transferLimitConfigs,
         address _lzEndpoint,
-        address _owner
-    ) OFT(_name, _symbol, _lzEndpoint, _owner) Ownable(_owner) ERC20Permit(_name){
-        _grantRole(DEFAULT_ADMIN_ROLE, _owner);
-        _grantRole(ADMIN_ROLE, _owner);
+        address _defaultAdmin,
+        address _timelockAddress
+    ) OFT(_name, _symbol, _lzEndpoint, _defaultAdmin) Ownable(_timelockAddress) ERC20Permit(_name){
+        _grantRole(DEFAULT_ADMIN_ROLE, _timelockAddress);
+        _grantRole(ADMIN_ROLE, _defaultAdmin);
 
         _setTransferLimitConfigs(_transferLimitConfigs);
 
