@@ -234,11 +234,11 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         require(token.depositEnabled == true, "pause deposit");
         require(block.timestamp < token.exchangeRateExpiredTimestamp, "exchange rate expired");
 
+        amountIn = _transferToVault(msg.sender, sourceTokenAddress, amountIn);
+
         //assToSourceExchangeRate=token.assToSourceExchangeRate # XXX amount/(assXXX total supply)
         //assXXXAmount=1/(assToSourceExchangeRate/1e8) * amountIn/(10 ** token.sourceTokenDecimals) * 1e18
         uint256 assXXXAmount = amountIn * 1e26 / (token.assToSourceExchangeRate * (10 ** token.sourceTokenDecimals));
-
-        _transferToVault(msg.sender, sourceTokenAddress, amountIn);
 
         IAss(assTokenAddress).mint(msg.sender, assXXXAmount);
         emit MintAssXXX(msg.sender, sourceTokenAddress, token.assTokenAddress, amountIn, assXXXAmount, token.assToSourceExchangeRate);
@@ -283,7 +283,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         uint256 assTokenBalance = IERC20(assTokenAddress).balanceOf(msg.sender);
         require(assTokenAmount <= assTokenBalance, "insufficient balance");
 
-        _lock(msg.sender, assTokenAddress, assTokenAmount);
+        assTokenAmount = _lock(msg.sender, assTokenAddress, assTokenAmount);
 
         requestWithdrawMaxNo += 1;
         RequestWithdrawInfo memory requestWithdrawInfo = RequestWithdrawInfo({
@@ -348,16 +348,23 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         return IERC20(currency).balanceOf(address(this));
     }
 
-    function _transferToVault(address from, address token, uint256 amount) private {
+    function _transferToVault(address from, address token, uint256 amount) private returns (uint256){
         if (token != NATIVE_WRAPPED) {
-            IERC20(token).safeTransferFrom(from, address(this), amount);
+            IERC20 erc20 = IERC20(token);
+            uint256 before = erc20.balanceOf(address(this));
+            erc20.safeTransferFrom(from, address(this), amount);
+            return erc20.balanceOf(address(this)) - before;
         } else {
             require(msg.value >= amount, "insufficient balance");
+            return amount;
         }
     }
 
-    function _lock(address from, address token, uint256 amount) private {
-        IERC20(token).safeTransferFrom(from, address(this), amount);
+    function _lock(address from, address token, uint256 amount) private returns (uint256){
+        IERC20 erc20 = IERC20(token);
+        uint256 before = erc20.balanceOf(address(this));
+        erc20.safeTransferFrom(from, address(this), amount);
+        return erc20.balanceOf(address(this)) - before;
     }
 
     function _transferToCeffu(address receipt, address token) private returns (uint256){
