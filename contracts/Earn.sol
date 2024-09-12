@@ -72,6 +72,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         uint256 sourceTokenAmount;
         uint256 applyTimestamp;
         bool canClaimWithdraw;
+        address receipt;
     }
 
 
@@ -81,7 +82,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
 
     mapping(address => Token) public supportAssToken;
     mapping(address => address) public supportSourceToken;
-    mapping(address => mapping(uint256 => RequestWithdrawInfo)) public requestWithdraws;
+    mapping(uint256 => RequestWithdrawInfo) public requestWithdraws;
 
     uint256 public requestWithdrawMaxNo;
 
@@ -291,9 +292,10 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
             assTokenAmount: assTokenAmount,
             applyTimestamp: block.timestamp,
             sourceTokenAmount: 0,
-            canClaimWithdraw: false
+            canClaimWithdraw: false,
+            receipt: msg.sender
         });
-        requestWithdraws[msg.sender][requestWithdrawMaxNo] = requestWithdrawInfo;
+        requestWithdraws[requestWithdrawMaxNo] = requestWithdrawInfo;
 
         emit RequestWithdraw(msg.sender, assTokenAddress, assTokenAmount, requestWithdrawMaxNo);
     }
@@ -306,10 +308,11 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
             require(token.assTokenAddress != address(0), "not exist");
             require(token.withdrawEnabled == true, "pause withdraw");
 
-            RequestWithdrawInfo storage requestWithdrawInfo = requestWithdraws[distributeWithdrawInfo.receipt][distributeWithdrawInfo.requestWithdrawNo];
+            RequestWithdrawInfo storage requestWithdrawInfo = requestWithdraws[distributeWithdrawInfo.requestWithdrawNo];
             require(requestWithdrawInfo.assTokenAddress != address(0), "not exist request");
             require(requestWithdrawInfo.assTokenAddress == distributeWithdrawInfo.assTokenAddress, "unmatched request");
             require(requestWithdrawInfo.canClaimWithdraw == false, "can not claim");
+            require(requestWithdrawInfo.receipt == distributeWithdrawInfo.receipt, "unmatched request");
 
             requestWithdrawInfo.sourceTokenAmount = distributeWithdrawInfo.sourceTokenAmount;
             requestWithdrawInfo.canClaimWithdraw = true;
@@ -324,9 +327,10 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         uint256 length = requestWithdrawNos.length;
         for (UC i = ZERO; i < uc(length); i = i + ONE) {
             uint256 requestWithdrawNo = requestWithdrawNos[i.into()];
-            RequestWithdrawInfo storage requestWithdrawInfo = requestWithdraws[msg.sender][requestWithdrawNo];
+            RequestWithdrawInfo storage requestWithdrawInfo = requestWithdraws[requestWithdrawNo];
             require(requestWithdrawInfo.assTokenAddress != address(0), "not exist");
             require(requestWithdrawInfo.canClaimWithdraw == true, "can not claim");
+            require(requestWithdrawInfo.receipt == msg.sender, "unmatched request");
 
             Token storage token = supportAssToken[requestWithdrawInfo.assTokenAddress];
             require(token.assTokenAddress != address(0), "currency not support");
@@ -336,7 +340,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
             uint256 assTokenAmount = requestWithdrawInfo.assTokenAmount;
             uint256 sourceTokenAmount = requestWithdrawInfo.sourceTokenAmount;
 
-            delete requestWithdraws[msg.sender][requestWithdrawNo];
+            delete requestWithdraws[requestWithdrawNo];
 
             _withdraw(msg.sender, token.sourceTokenAddress, sourceTokenAmount);
 
