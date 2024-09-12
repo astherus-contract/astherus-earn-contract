@@ -66,37 +66,7 @@ const config: HardhatUserConfig = {
             accounts,
             tags: ['testnet']
         },
-        'bscTestnet-BTC': {
-            eid: EndpointId.BSC_V2_TESTNET,
-            url: process.env.RPC_URL_SEPOLIA || 'https://data-seed-prebsc-1-s1.bnbchain.org:8545/',
-            accounts,
-            tags: ['testnet']
-        },
-        'bscTestnet-BNB': {
-            eid: EndpointId.BSC_V2_TESTNET,
-            url: process.env.RPC_URL_SEPOLIA || 'https://data-seed-prebsc-1-s1.bnbchain.org:8545/',
-            accounts,
-            tags: ['testnet']
-        },
-        'bscTestnet-USDT': {
-            eid: EndpointId.BSC_V2_TESTNET,
-            url: process.env.RPC_URL_SEPOLIA || 'https://data-seed-prebsc-1-s1.bnbchain.org:8545/',
-            accounts,
-            tags: ['testnet']
-        },
-        'bscTestnet-ETH': {
-            eid: EndpointId.BSC_V2_TESTNET,
-            url: process.env.RPC_URL_SEPOLIA || 'https://data-seed-prebsc-1-s1.bnbchain.org:8545/',
-            accounts,
-            tags: ['testnet']
-        },
-        'bscTestnet-USDC': {
-            eid: EndpointId.BSC_V2_TESTNET,
-            url: process.env.RPC_URL_SEPOLIA || 'https://data-seed-prebsc-1-s1.bnbchain.org:8545/',
-            accounts,
-            tags: ['testnet']
-        },
-        'sepoliaTestnet-USDC': {
+        'sepoliaTestnet': {
             eid: EndpointId.SEPOLIA_V2_TESTNET,
             url: process.env.RPC_URL_SEPOLIA || 'https://rpc.sepolia.org/',
             accounts,
