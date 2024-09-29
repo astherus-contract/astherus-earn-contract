@@ -12,10 +12,12 @@ const deploy: DeployFunction = async (hre) => {
 
     const {deployer} = await getNamedAccounts()
 
-    const AssXXX = await ethers.getContract('AssXXX');
+    const AssXXX = await ethers.getContract('AssUSDC');
 
     const endpointV2Deployment = await hre.deployments.get('EndpointV2')
     console.log(`EndpointV2: ${endpointV2Deployment.address}`)
+
+    const timelock = await ethers.getContract('Timelock');
 
     await run(
         "verify:verify",
@@ -26,7 +28,8 @@ const deploy: DeployFunction = async (hre) => {
                 symbol, // symbol
                 [], //_transferLimitConfigs
                 endpointV2Deployment.address, // LayerZero's EndpointV2 address
-                deployer, // owner
+                deployer, // _defaultAdmin
+                timelock.address //timelock
             ]
         }
     );

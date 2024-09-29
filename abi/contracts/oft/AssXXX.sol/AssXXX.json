@@ -12,13 +12,55 @@
         "type": "string"
       },
       {
+        "components": [
+          {
+            "internalType": "uint32",
+            "name": "dstEid",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxDailyTransferAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "singleTransferUpperLimit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "singleTransferLowerLimit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "dailyTransferAmountPerAddress",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "dailyTransferAttemptPerAddress",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct TransferLimiter.TransferLimit[]",
+        "name": "_transferLimitConfigs",
+        "type": "tuple[]"
+      },
+      {
         "internalType": "address",
         "name": "_lzEndpoint",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_delegate",
+        "name": "_defaultAdmin",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_timelockAddress",
         "type": "address"
       }
     ],
@@ -66,6 +108,33 @@
       }
     ],
     "name": "AddressInsufficientBalance",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ECDSAInvalidSignature",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "length",
+        "type": "uint256"
+      }
+    ],
+    "name": "ECDSAInvalidSignatureLength",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "s",
+        "type": "bytes32"
+      }
+    ],
+    "name": "ECDSAInvalidSignatureS",
     "type": "error"
   },
   {
@@ -155,6 +224,33 @@
     "type": "error"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "deadline",
+        "type": "uint256"
+      }
+    ],
+    "name": "ERC2612ExpiredSignature",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "signer",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "name": "ERC2612InvalidSigner",
+    "type": "error"
+  },
+  {
     "inputs": [],
     "name": "EnforcedPause",
     "type": "error"
@@ -167,6 +263,22 @@
   {
     "inputs": [],
     "name": "FailedInnerCall",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "currentNonce",
+        "type": "uint256"
+      }
+    ],
+    "name": "InvalidAccountNonce",
     "type": "error"
   },
   {
@@ -193,6 +305,11 @@
       }
     ],
     "name": "InvalidOptions",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidShortString",
     "type": "error"
   },
   {
@@ -315,6 +432,27 @@
     "type": "error"
   },
   {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "str",
+        "type": "string"
+      }
+    ],
+    "name": "StringTooLong",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TransferLimitExceeded",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TransferLimitNotSet",
+    "type": "error"
+  },
+  {
     "anonymous": false,
     "inputs": [
       {
@@ -337,6 +475,12 @@
       }
     ],
     "name": "Approval",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [],
+    "name": "EIP712DomainChanged",
     "type": "event"
   },
   {
@@ -619,6 +763,49 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "uint32",
+        "name": "dstEid",
+        "type": "uint32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "maxDailyTransferAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "singleTransferUpperLimit",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "singleTransferLowerLimit",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "dailyTransferAmountPerAddress",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "dailyTransferAttemptPerAddress",
+        "type": "uint256"
+      }
+    ],
+    "name": "TransferLimitChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "address",
         "name": "account",
         "type": "address"
@@ -643,6 +830,19 @@
   {
     "inputs": [],
     "name": "DEFAULT_ADMIN_ROLE",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "DOMAIN_SEPARATOR",
     "outputs": [
       {
         "internalType": "bytes32",
@@ -856,6 +1056,25 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "dstEid",
+        "type": "uint32"
+      }
+    ],
+    "name": "dailyTransferAmount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "decimalConversionRate",
     "outputs": [
@@ -876,6 +1095,49 @@
         "internalType": "uint8",
         "name": "",
         "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "eip712Domain",
+    "outputs": [
+      {
+        "internalType": "bytes1",
+        "name": "fields",
+        "type": "bytes1"
+      },
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "version",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "chainId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "verifyingContract",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "salt",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "extensions",
+        "type": "uint256[]"
       }
     ],
     "stateMutability": "view",
@@ -1044,6 +1306,49 @@
         "internalType": "bool",
         "name": "",
         "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "dstEid",
+        "type": "uint32"
+      }
+    ],
+    "name": "lastUpdatedTime",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "lastUpdatedTime",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "dstEid",
+        "type": "uint32"
+      },
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "lastUserUpdatedTime",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "updatedTime",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -1290,6 +1595,25 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "name": "nonces",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "oApp",
     "outputs": [
@@ -1388,6 +1712,49 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "spender",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "deadline",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint8",
+        "name": "v",
+        "type": "uint8"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "r",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "s",
+        "type": "bytes32"
+      }
+    ],
+    "name": "permit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -1833,6 +2200,51 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint32",
+            "name": "dstEid",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxDailyTransferAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "singleTransferUpperLimit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "singleTransferLowerLimit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "dailyTransferAmountPerAddress",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "dailyTransferAttemptPerAddress",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct TransferLimiter.TransferLimit[]",
+        "name": "_transferLimitConfigs",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "setTransferLimitConfigs",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "sharedDecimals",
     "outputs": [
@@ -1959,6 +2371,50 @@
   {
     "inputs": [
       {
+        "internalType": "uint32",
+        "name": "dstEid",
+        "type": "uint32"
+      }
+    ],
+    "name": "transferLimitConfigs",
+    "outputs": [
+      {
+        "internalType": "uint32",
+        "name": "dstEid",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxDailyTransferAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "singleTransferUpperLimit",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "singleTransferLowerLimit",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "dailyTransferAmountPerAddress",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "dailyTransferAttemptPerAddress",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "newOwner",
         "type": "address"
@@ -1974,6 +2430,54 @@
     "name": "unpause",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "dstEid",
+        "type": "uint32"
+      },
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "userDailyAttempt",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "attempt",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "dstEid",
+        "type": "uint32"
+      },
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "userDailyTransferAmount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   }
 ]

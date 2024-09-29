@@ -13,7 +13,6 @@ import "./interface/IWithdrawVault.sol";
 
 contract WithdrawVault is Initializable, PausableUpgradeable, AccessControlEnumerableUpgradeable, UUPSUpgradeable, IWithdrawVault, ReentrancyGuardUpgradeable {
 
-    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant PAUSE_ROLE = keccak256("PAUSE_ROLE");
     bytes32 public constant TRANSFER_ROLE = keccak256("TRANSFER_ROLE");
 
@@ -24,6 +23,7 @@ contract WithdrawVault is Initializable, PausableUpgradeable, AccessControlEnume
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor(address timelockAddress) {
+        require(timelockAddress != address(0), "timelockAddress cannot be a zero address");
         TIMELOCK_ADDRESS = timelockAddress;
         _disableInitializers();
     }
@@ -45,8 +45,8 @@ contract WithdrawVault is Initializable, PausableUpgradeable, AccessControlEnume
         __UUPSUpgradeable_init();
         __ReentrancyGuard_init();
 
-        _grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
-        _grantRole(ADMIN_ROLE, defaultAdmin);
+        _grantRole(DEFAULT_ADMIN_ROLE, TIMELOCK_ADDRESS);
+        _grantRole(PAUSE_ROLE, defaultAdmin);
     }
 
     function pause() external onlyRole(PAUSE_ROLE) {

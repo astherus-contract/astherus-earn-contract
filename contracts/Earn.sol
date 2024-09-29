@@ -72,6 +72,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         uint256 sourceTokenAmount;
         uint256 applyTimestamp;
         bool canClaimWithdraw;
+        address receipt;
     }
 
 
@@ -81,12 +82,16 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
 
     mapping(address => Token) public supportAssToken;
     mapping(address => address) public supportSourceToken;
-    mapping(address => mapping(uint256 => RequestWithdrawInfo)) public requestWithdraws;
+    mapping(uint256 => RequestWithdrawInfo) public requestWithdraws;
 
     uint256 public requestWithdrawMaxNo;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor(address nativeWrapped, address timelockAddress, address withdrawVault) {
+        require(nativeWrapped != address(0), "nativeWrapped cannot be a zero address");
+        require(timelockAddress != address(0), "timelockAddress cannot be a zero address");
+        require(withdrawVault != address(0), "withdrawVault cannot be a zero address");
+
         NATIVE_WRAPPED = nativeWrapped;
         TIMELOCK_ADDRESS = timelockAddress;
         WITHDRAW_VAULT = withdrawVault;
@@ -104,7 +109,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         __UUPSUpgradeable_init();
         __ReentrancyGuard_init();
 
-        _grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
+        _grantRole(DEFAULT_ADMIN_ROLE, TIMELOCK_ADDRESS);
         _grantRole(ADMIN_ROLE, defaultAdmin);
         _grantRole(PAUSE_ROLE, defaultAdmin);
     }
@@ -160,6 +165,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         require(token.assTokenAddress != address(0), "not exist");
 
         bool oldDepositEnabled = token.depositEnabled;
+        require(oldDepositEnabled != enabled, "newDepositEnabled can not be equal oldDepositEnabled");
 
         token.depositEnabled = enabled;
 
@@ -173,6 +179,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         require(token.assTokenAddress != address(0), "not exist");
 
         bool oldWithdrawEnabled = token.withdrawEnabled;
+        require(oldWithdrawEnabled != enabled, "newWithdrawEnabled can not be equal oldWithdrawEnabled");
 
         token.withdrawEnabled = enabled;
 
@@ -187,6 +194,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         require(token.assTokenAddress != address(0), "not exist");
 
         address oldCeffuAddress = token.ceffuAddress;
+        require(oldCeffuAddress != ceffuAddress, "newCeffuAddress can not be equal oldCeffuAddress");
 
         token.ceffuAddress = ceffuAddress;
 
@@ -200,6 +208,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         require(token.assTokenAddress != address(0), "not exist");
 
         bool oldTransferToCeffuEnabled = token.transferToCeffuEnabled;
+        require(oldTransferToCeffuEnabled != enabled, "newTransferToCeffuEnabled can not be equal oldTransferToCeffuEnabled");
 
         token.transferToCeffuEnabled = enabled;
 
@@ -226,11 +235,11 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         require(token.depositEnabled == true, "pause deposit");
         require(block.timestamp < token.exchangeRateExpiredTimestamp, "exchange rate expired");
 
+        amountIn = _transferToVault(msg.sender, sourceTokenAddress, amountIn);
+
         //assToSourceExchangeRate=token.assToSourceExchangeRate # XXX amount/(assXXX total supply)
         //assXXXAmount=1/(assToSourceExchangeRate/1e8) * amountIn/(10 ** token.sourceTokenDecimals) * 1e18
         uint256 assXXXAmount = amountIn * 1e26 / (token.assToSourceExchangeRate * (10 ** token.sourceTokenDecimals));
-
-        _transferToVault(msg.sender, sourceTokenAddress, amountIn);
 
         IAss(assTokenAddress).mint(msg.sender, assXXXAmount);
         emit MintAssXXX(msg.sender, sourceTokenAddress, token.assTokenAddress, amountIn, assXXXAmount, token.assToSourceExchangeRate);
@@ -275,7 +284,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         uint256 assTokenBalance = IERC20(assTokenAddress).balanceOf(msg.sender);
         require(assTokenAmount <= assTokenBalance, "insufficient balance");
 
-        _lock(msg.sender, assTokenAddress, assTokenAmount);
+        assTokenAmount = _lock(msg.sender, assTokenAddress, assTokenAmount);
 
         requestWithdrawMaxNo += 1;
         RequestWithdrawInfo memory requestWithdrawInfo = RequestWithdrawInfo({
@@ -283,9 +292,10 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
             assTokenAmount: assTokenAmount,
             applyTimestamp: block.timestamp,
             sourceTokenAmount: 0,
-            canClaimWithdraw: false
+            canClaimWithdraw: false,
+            receipt: msg.sender
         });
-        requestWithdraws[msg.sender][requestWithdrawMaxNo] = requestWithdrawInfo;
+        requestWithdraws[requestWithdrawMaxNo] = requestWithdrawInfo;
 
         emit RequestWithdraw(msg.sender, assTokenAddress, assTokenAmount, requestWithdrawMaxNo);
     }
@@ -298,9 +308,11 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
             require(token.assTokenAddress != address(0), "not exist");
             require(token.withdrawEnabled == true, "pause withdraw");
 
-            RequestWithdrawInfo storage requestWithdrawInfo = requestWithdraws[distributeWithdrawInfo.receipt][distributeWithdrawInfo.requestWithdrawNo];
-            require(requestWithdrawInfo.assTokenAddress != address(0), "not exist");
+            RequestWithdrawInfo storage requestWithdrawInfo = requestWithdraws[distributeWithdrawInfo.requestWithdrawNo];
+            require(requestWithdrawInfo.assTokenAddress != address(0), "not exist request");
+            require(requestWithdrawInfo.assTokenAddress == distributeWithdrawInfo.assTokenAddress, "unmatched request");
             require(requestWithdrawInfo.canClaimWithdraw == false, "can not claim");
+            require(requestWithdrawInfo.receipt == distributeWithdrawInfo.receipt, "unmatched request");
 
             requestWithdrawInfo.sourceTokenAmount = distributeWithdrawInfo.sourceTokenAmount;
             requestWithdrawInfo.canClaimWithdraw = true;
@@ -315,9 +327,10 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         uint256 length = requestWithdrawNos.length;
         for (UC i = ZERO; i < uc(length); i = i + ONE) {
             uint256 requestWithdrawNo = requestWithdrawNos[i.into()];
-            RequestWithdrawInfo storage requestWithdrawInfo = requestWithdraws[msg.sender][requestWithdrawNo];
+            RequestWithdrawInfo storage requestWithdrawInfo = requestWithdraws[requestWithdrawNo];
             require(requestWithdrawInfo.assTokenAddress != address(0), "not exist");
             require(requestWithdrawInfo.canClaimWithdraw == true, "can not claim");
+            require(requestWithdrawInfo.receipt == msg.sender, "unmatched request");
 
             Token storage token = supportAssToken[requestWithdrawInfo.assTokenAddress];
             require(token.assTokenAddress != address(0), "currency not support");
@@ -327,7 +340,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
             uint256 assTokenAmount = requestWithdrawInfo.assTokenAmount;
             uint256 sourceTokenAmount = requestWithdrawInfo.sourceTokenAmount;
 
-            delete requestWithdraws[msg.sender][requestWithdrawNo];
+            delete requestWithdraws[requestWithdrawNo];
 
             _withdraw(msg.sender, token.sourceTokenAddress, sourceTokenAmount);
 
@@ -339,16 +352,23 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         return IERC20(currency).balanceOf(address(this));
     }
 
-    function _transferToVault(address from, address token, uint256 amount) private {
+    function _transferToVault(address from, address token, uint256 amount) private returns (uint256){
         if (token != NATIVE_WRAPPED) {
-            IERC20(token).safeTransferFrom(from, address(this), amount);
+            IERC20 erc20 = IERC20(token);
+            uint256 before = erc20.balanceOf(address(this));
+            erc20.safeTransferFrom(from, address(this), amount);
+            return erc20.balanceOf(address(this)) - before;
         } else {
             require(msg.value >= amount, "insufficient balance");
+            return amount;
         }
     }
 
-    function _lock(address from, address token, uint256 amount) private {
-        IERC20(token).safeTransferFrom(from, address(this), amount);
+    function _lock(address from, address token, uint256 amount) private returns (uint256){
+        IERC20 erc20 = IERC20(token);
+        uint256 before = erc20.balanceOf(address(this));
+        erc20.safeTransferFrom(from, address(this), amount);
+        return erc20.balanceOf(address(this)) - before;
     }
 
     function _transferToCeffu(address receipt, address token) private returns (uint256){
