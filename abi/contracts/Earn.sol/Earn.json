@@ -142,6 +142,31 @@
       {
         "indexed": true,
         "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "assTokenAddress",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "AddEmergencyWithdrawWhitelist",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
         "name": "assTokenAddress",
         "type": "address"
       },
@@ -320,6 +345,31 @@
         "type": "address"
       },
       {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "RemoveEmergencyWithdrawWhitelist",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "assTokenAddress",
+        "type": "address"
+      },
+      {
         "indexed": false,
         "internalType": "uint256",
         "name": "assTokenAmount",
@@ -330,6 +380,12 @@
         "internalType": "uint256",
         "name": "requestWithdrawNo",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "emergency",
+        "type": "bool"
       }
     ],
     "name": "RequestWithdraw",
@@ -496,6 +552,31 @@
       }
     ],
     "name": "UpdateDepositEnabled",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "assTokenAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "oldEmergencyWithdrawEnabled",
+        "type": "bool"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "newEmergencyWithdrawEnabled",
+        "type": "bool"
+      }
+    ],
+    "name": "UpdateEmergencyWithdrawEnabled",
     "type": "event"
   },
   {
@@ -698,6 +779,24 @@
         "type": "address"
       },
       {
+        "internalType": "address[]",
+        "name": "users",
+        "type": "address[]"
+      }
+    ],
+    "name": "addEmergencyWithdrawWhitelist",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "assTokenAddress",
+        "type": "address"
+      },
+      {
         "internalType": "address",
         "name": "sourceTokenAddress",
         "type": "address"
@@ -725,6 +824,11 @@
       {
         "internalType": "bool",
         "name": "transferToCeffuEnabled",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "emergencyWithdrawEnabled",
         "type": "bool"
       }
     ],
@@ -823,6 +927,30 @@
     "name": "distributeWithdraw",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "emergencyWithdrawWhitelist",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -978,6 +1106,24 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "assTokenAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address[]",
+        "name": "users",
+        "type": "address[]"
+      }
+    ],
+    "name": "removeEmergencyWithdrawWhitelist",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bytes32",
         "name": "role",
         "type": "bytes32"
@@ -989,6 +1135,24 @@
       }
     ],
     "name": "renounceRole",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "assTokenAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "assTokenAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "requestEmergencyWithdraw",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1027,11 +1191,6 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      },
-      {
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
@@ -1062,6 +1221,16 @@
       {
         "internalType": "bool",
         "name": "canClaimWithdraw",
+        "type": "bool"
+      },
+      {
+        "internalType": "address",
+        "name": "receipt",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "emergency",
         "type": "bool"
       }
     ],
@@ -1139,6 +1308,11 @@
       {
         "internalType": "bool",
         "name": "transferToCeffuEnabled",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "emergencyWithdrawEnabled",
         "type": "bool"
       }
     ],
@@ -1235,6 +1409,24 @@
       }
     ],
     "name": "updateDepositEnabled",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "assTokenAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "enabled",
+        "type": "bool"
+      }
+    ],
+    "name": "updateEmergencyWithdrawEnabled",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

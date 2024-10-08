@@ -127,9 +127,10 @@ npx hardhat deploy --network bscTestnet --tags AssUSDC
 
 # 部署测试asset BTC BNB USDT USDC
 
-```shell
-hardhat deploy --network bscTestnet --tags BNBTest
-```
+BNB 地址
+const BNB_CHAIN_TESTNET_WRAPPED = '0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd';
+const BNB_CHAIN_WRAPPED = '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c';
+
 
 ```shell
 hardhat deploy --network bscTestnet --tags BTCTest
