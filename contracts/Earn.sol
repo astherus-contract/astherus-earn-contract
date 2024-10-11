@@ -29,14 +29,17 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
     event AddToken(address indexed assTokenAddress, address indexed sourceTokenAddress);
     event UpdateDepositEnabled(address indexed assTokenAddress, bool oldDepositEnabled, bool newDepositEnabled);
     event UpdateWithdrawEnabled(address indexed assTokenAddress, bool oldWithdrawEnabled, bool newWithdrawEnabled);
+    event UpdateEmergencyWithdrawEnabled(address indexed assTokenAddress, bool oldEmergencyWithdrawEnabled, bool newEmergencyWithdrawEnabled);
     event UpdateCeffuAddress(address indexed assTokenAddress, address oldCeffuAddress, address newCeffuAddress);
     event UpdateTransferToCeffuEnabled(address indexed assTokenAddress, bool oldTransferToCeffuEnabled, bool newTransferToCeffuEnabled);
     event MintAssXXX(address indexed sender, address indexed sourceTokenAddress, address indexed assTokenAddress, uint256 amountIn, uint256 assXXXAmount, uint256 assToSourceExchangeRate);
     event TransferToCeffu(address indexed sourceTokenAddress, uint256 sourceTokenAmount, address ceffuAddress);
     event UploadExchangeRate(address indexed assTokenAddress, uint256 assToSourceExchangeRate, uint256 exchangeRateExpiredTimestamp);
-    event RequestWithdraw(address indexed sender, address indexed assTokenAddress, uint256 assTokenAmount, uint256 requestWithdrawNo);
+    event RequestWithdraw(address indexed sender, address indexed assTokenAddress, uint256 assTokenAmount, uint256 requestWithdrawNo, bool emergency);
     event DistributeWithdraw(address indexed assTokenAddress, address indexed sourceTokenAddress, uint256 assTokenAmount, uint256 sourceTokenAmount, uint256 requestWithdrawNo);
     event ClaimWithdraw(address indexed sender, address indexed assTokenAddress, address indexed sourceTokenAddress, uint256 assTokenAmount, uint256 sourceTokenAmount, uint256 requestWithdrawNo);
+    event AddEmergencyWithdrawWhitelist(address indexed sender, address indexed assTokenAddress, address indexed user);
+    event RemoveEmergencyWithdrawWhitelist(address indexed sender, address indexed assTokenAddress, address indexed user);
 
 
     struct Token {
@@ -51,6 +54,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         bool withdrawEnabled;
         address ceffuAddress;
         bool transferToCeffuEnabled;
+        bool emergencyWithdrawEnabled;
     }
 
     struct ExchangeRateInfo {
@@ -73,6 +77,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         uint256 applyTimestamp;
         bool canClaimWithdraw;
         address receipt;
+        bool emergency;
     }
 
 
@@ -83,6 +88,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
     mapping(address => Token) public supportAssToken;
     mapping(address => address) public supportSourceToken;
     mapping(uint256 => RequestWithdrawInfo) public requestWithdraws;
+    mapping(address => mapping(address => uint)) public emergencyWithdrawWhitelist;
 
     uint256 public requestWithdrawMaxNo;
 
@@ -131,7 +137,8 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         uint256 exchangeRateExpiredTimestamp,
         bool depositEnabled,
         bool withdrawEnabled,
-        bool transferToCeffuEnabled
+        bool transferToCeffuEnabled,
+        bool emergencyWithdrawEnabled
     ) external onlyRole(ADMIN_ROLE) {
         require(assTokenAddress != address(0), "assTokenAddress cannot be a zero address");
         require(sourceTokenAddress != address(0), "sourceTokenAddress cannot be a zero address");
@@ -152,6 +159,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         token.depositEnabled = depositEnabled;
         token.withdrawEnabled = withdrawEnabled;
         token.transferToCeffuEnabled = transferToCeffuEnabled;
+        token.emergencyWithdrawEnabled = emergencyWithdrawEnabled;
 
         supportSourceToken[token.sourceTokenAddress] = assTokenAddress;
 
@@ -186,6 +194,20 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         emit UpdateWithdrawEnabled(assTokenAddress, oldWithdrawEnabled, token.withdrawEnabled);
     }
 
+    function updateEmergencyWithdrawEnabled(address assTokenAddress, bool enabled) external onlyRole(ADMIN_ROLE) {
+        require(assTokenAddress != address(0), "assTokenAddress cannot be a zero address");
+
+        Token storage token = supportAssToken[assTokenAddress];
+        require(token.assTokenAddress != address(0), "not exist");
+
+        bool oldEmergencyWithdrawEnabled = token.emergencyWithdrawEnabled;
+        require(oldEmergencyWithdrawEnabled != enabled, "newEmergencyWithdrawEnabled can not be equal oldEmergencyWithdrawEnabled");
+
+        token.emergencyWithdrawEnabled = enabled;
+
+        emit UpdateEmergencyWithdrawEnabled(assTokenAddress, oldEmergencyWithdrawEnabled, token.emergencyWithdrawEnabled);
+    }
+
     function updateCeffuAddress(address assTokenAddress, address ceffuAddress) external onlyRole(ADMIN_ROLE) {
         require(assTokenAddress != address(0), "assTokenAddress cannot be a zero address");
         require(ceffuAddress != address(0), "ceffuAddress cannot be a zero address");
@@ -213,6 +235,31 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         token.transferToCeffuEnabled = enabled;
 
         emit UpdateTransferToCeffuEnabled(assTokenAddress, oldTransferToCeffuEnabled, token.transferToCeffuEnabled);
+    }
+
+
+    function addEmergencyWithdrawWhitelist(address assTokenAddress, address[] memory users) external onlyRole(ADMIN_ROLE) {
+        require(assTokenAddress != address(0), "assTokenAddress cannot be a zero address");
+
+        Token storage token = supportAssToken[assTokenAddress];
+        require(token.assTokenAddress != address(0), "not exist");
+
+        for (uint256 i = 0; i < users.length; i++) {
+            emergencyWithdrawWhitelist[assTokenAddress][users[i]] = 1;
+            emit AddEmergencyWithdrawWhitelist(msg.sender, assTokenAddress, users[i]);
+        }
+    }
+
+    function removeEmergencyWithdrawWhitelist(address assTokenAddress, address[] memory users) external onlyRole(ADMIN_ROLE) {
+        require(assTokenAddress != address(0), "assTokenAddress cannot be a zero address");
+
+        Token storage token = supportAssToken[assTokenAddress];
+        require(token.assTokenAddress != address(0), "not exist");
+
+        for (uint256 i = 0; i < users.length; i++) {
+            emergencyWithdrawWhitelist[assTokenAddress][users[i]] = 0;
+            emit RemoveEmergencyWithdrawWhitelist(msg.sender, assTokenAddress, users[i]);
+        }
     }
 
     function deposit(address sourceTokenAddress, uint256 amountIn) external nonReentrant whenNotPaused {
@@ -274,12 +321,24 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
     }
 
     function requestWithdraw(address assTokenAddress, uint256 assTokenAmount) external nonReentrant whenNotPaused {
+        _doRequestWithdraw(assTokenAddress, assTokenAmount, false);
+    }
+
+    function requestEmergencyWithdraw(address assTokenAddress, uint256 assTokenAmount) external nonReentrant whenNotPaused {
+        _doRequestWithdraw(assTokenAddress, assTokenAmount, true);
+    }
+
+    function _doRequestWithdraw(address assTokenAddress, uint256 assTokenAmount, bool emergency) private {
         require(assTokenAddress != address(0), "sourceTokenAddress cannot be a zero address");
         require(assTokenAmount > 0, "invalid amount");
 
         Token storage token = supportAssToken[assTokenAddress];
         require(token.assTokenAddress != address(0), "currency not support");
         require(token.withdrawEnabled == true, "pause withdraw");
+
+        if (emergency) {
+            require(token.emergencyWithdrawEnabled || emergencyWithdrawWhitelist[assTokenAddress][msg.sender] == 1, "not support emergency withdraw");
+        }
 
         uint256 assTokenBalance = IERC20(assTokenAddress).balanceOf(msg.sender);
         require(assTokenAmount <= assTokenBalance, "insufficient balance");
@@ -293,11 +352,12 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
             applyTimestamp: block.timestamp,
             sourceTokenAmount: 0,
             canClaimWithdraw: false,
-            receipt: msg.sender
+            receipt: msg.sender,
+            emergency: emergency
         });
         requestWithdraws[requestWithdrawMaxNo] = requestWithdrawInfo;
 
-        emit RequestWithdraw(msg.sender, assTokenAddress, assTokenAmount, requestWithdrawMaxNo);
+        emit RequestWithdraw(msg.sender, assTokenAddress, assTokenAmount, requestWithdrawMaxNo, emergency);
     }
 
     function distributeWithdraw(DistributeWithdrawInfo[] calldata distributeWithdrawInfoList) external nonReentrant whenNotPaused onlyRole(BOT_ROLE) {
