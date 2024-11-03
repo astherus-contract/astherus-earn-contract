@@ -4,8 +4,8 @@ import { type DeployFunction } from 'hardhat-deploy/types'
 
 const contractName = 'AssXXX'
 
-const name='Astherus AssBTC'
-const symbol='AssBTC'
+const name='Astherus BTC'
+const symbol='AsBTC'
 
 const deploy: DeployFunction = async (hre) => {
     const {getNamedAccounts, deployments} = hre

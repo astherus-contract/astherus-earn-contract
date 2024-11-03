@@ -18,7 +18,7 @@ module.exports = async function ({
         "verify:verify", 
         {
             address: EarnImplementation.address,
-            constructorArguments: [BNB_CHAIN_TESTNET_WRAPPED, Timelock.address, WithdrawVault.address]
+            constructorArguments: [BNB_CHAIN_WRAPPED, Timelock.address, WithdrawVault.address]
         }
     );
 };
