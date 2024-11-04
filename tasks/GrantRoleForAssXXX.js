@@ -6,7 +6,7 @@ require("@nomicfoundation/hardhat-toolbox");
 //MINTER_AND_BURN_ROLE
 const role='0x144dc67236c5b8b129f92a31bb5cba2a9c107df2d9bcedef0515ca3f60ecb794'
 
-const contract='AsBTC'
+const contract='asBTC'
 
 
 task("grantRole:minter_and_burn_role", "grantRole:minter_and_burn_role")

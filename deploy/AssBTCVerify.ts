@@ -2,17 +2,17 @@ import {run} from "hardhat";
 
 import {type DeployFunction} from 'hardhat-deploy/types'
 
-const tag = 'AsBTCVerify'
+const tag = 'asBTCVerify'
 
 const name = 'Astherus BTC'
-const symbol = 'AsBTC'
+const symbol = 'asBTC'
 
 const deploy: DeployFunction = async (hre) => {
     const {getNamedAccounts, deployments, ethers} = hre
 
     const {deployer} = await getNamedAccounts()
 
-    const AssXXX = await ethers.getContract('AsBTC');
+    const AssXXX = await ethers.getContract('asBTC');
 
     const endpointV2Deployment = await hre.deployments.get('EndpointV2')
     console.log(`EndpointV2: ${endpointV2Deployment.address}`)

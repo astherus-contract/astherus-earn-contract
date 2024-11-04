@@ -13,7 +13,7 @@ task("change:timelock_min_delay", "change timelock_min_delay")
         const provider = new ethers.providers.JsonRpcProvider(network.config.url);
 
         const target = Contract.address;
-        const functionSignature = 'function updateDelay(uint256 newDelay)';
+        const functionSignature = 'updateDelay(uint256)';
         const data = '0x' + Contract.interface.encodeFunctionData('updateDelay', [minDelay]).substring(10);
 
         console.log(`target: ${target}`);
