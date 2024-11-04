@@ -14,8 +14,8 @@ module.exports = async function ({
         contract: "Timelock",
         from: deployer, 
         args: [
-            TimeLockConfig['default'].TimeLock.minDelay,
-            TimeLockConfig['default'].TimeLock.maxDelay,
+            TimeLockConfig['basemain'].TimeLock.minDelay,
+            TimeLockConfig['basemain'].TimeLock.maxDelay,
             [proposer],
             [executor],
         ], 

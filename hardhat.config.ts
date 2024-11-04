@@ -72,6 +72,12 @@ const config: HardhatUserConfig = {
             accounts,
             tags: ['mainnet']
         },
+        'bscMainnet': {
+            eid: EndpointId.BSC_V2_MAINNET,
+            url: process.env.RPC_URL_SEPOLIA || 'https://bsc-dataseed.binance.org/',
+            accounts,
+            tags: ['mainnet']
+        },
         'sepoliaTestnet': {
             eid: EndpointId.SEPOLIA_V2_TESTNET,
             url: process.env.RPC_URL_SEPOLIA || 'https://rpc.sepolia.org/',
