@@ -66,6 +66,18 @@ const config: HardhatUserConfig = {
             accounts,
             tags: ['testnet']
         },
+        'bscMainnetTest': {
+            eid: EndpointId.BSC_V2_MAINNET,
+            url: process.env.RPC_URL_SEPOLIA || 'https://bsc-dataseed.binance.org/',
+            accounts,
+            tags: ['mainnet']
+        },
+        'bscMainnet': {
+            eid: EndpointId.BSC_V2_MAINNET,
+            url: process.env.RPC_URL_SEPOLIA || 'https://bsc-dataseed.binance.org/',
+            accounts,
+            tags: ['mainnet']
+        },
         'sepoliaTestnet': {
             eid: EndpointId.SEPOLIA_V2_TESTNET,
             url: process.env.RPC_URL_SEPOLIA || 'https://rpc.sepolia.org/',
@@ -79,17 +91,17 @@ const config: HardhatUserConfig = {
         },
         multisig: {
             default: '0xf4903f4544558515b26ec4C6D6e91D2293b27275',
-            56: '0xa8c0C6Ee62F5AD95730fe23cCF37d1c1FFAA1c3f',
+            56: '0xf4903f4544558515b26ec4C6D6e91D2293b27275',
             1: '0x1FE3Fe2Ddd19AB58B0c56054a5AF217Afb27eCEA'
         },
         proposer: {
             default: '0xf4903f4544558515b26ec4C6D6e91D2293b27275',
-            56: '0xa8c0C6Ee62F5AD95730fe23cCF37d1c1FFAA1c3f',
+            56: '0xf4903f4544558515b26ec4C6D6e91D2293b27275',
             1: '0x1FE3Fe2Ddd19AB58B0c56054a5AF217Afb27eCEA'
         },
         executor: {
             default: '0xf4903f4544558515b26ec4C6D6e91D2293b27275',
-            56: '0xa8c0C6Ee62F5AD95730fe23cCF37d1c1FFAA1c3f',
+            56: '0xf4903f4544558515b26ec4C6D6e91D2293b27275',
             1: '0x1FE3Fe2Ddd19AB58B0c56054a5AF217Afb27eCEA'
         }
     },

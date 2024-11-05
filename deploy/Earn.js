@@ -15,7 +15,7 @@ module.exports = async function ({
 
     await deploy('Earn', {
             from: deployer,
-        args: [BNB_CHAIN_TESTNET_WRAPPED, Timelock.address, WithdrawVault.address],
+        args: [BNB_CHAIN_WRAPPED, Timelock.address, WithdrawVault.address],
             log: true, 
             skipIfAlreadyDeployed: false,
             proxy: {

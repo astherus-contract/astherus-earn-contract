@@ -13,7 +13,7 @@ import {ERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20P
 
 import "./TransferLimiter.sol";
 
-contract AssXXX is TransferLimiter, OFT, AccessControl, ERC20Pausable, ERC20Permit {
+contract asBTC is TransferLimiter, OFT, AccessControl, ERC20Pausable, ERC20Permit {
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant MINTER_AND_BURN_ROLE = keccak256("MINTER_AND_BURN_ROLE");
 

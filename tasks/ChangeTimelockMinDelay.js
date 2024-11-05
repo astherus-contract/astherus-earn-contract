@@ -3,22 +3,18 @@ const fs = require('fs');
 const prompt = require('prompt-sync')();
 require("@nomicfoundation/hardhat-toolbox");
 
-//MINTER_AND_BURN_ROLE
-const role='0x144dc67236c5b8b129f92a31bb5cba2a9c107df2d9bcedef0515ca3f60ecb794'
+//秒
+const minDelay=5
 
-const contract='asBTC'
-
-
-task("grantRole:minter_and_burn_role", "grantRole:minter_and_burn_role")
+task("change:timelock_min_delay", "change timelock_min_delay")
     .setAction(async ({facets}) => {
-        const Earn = await ethers.getContract('Earn')
-        const Contract = await ethers.getContract(contract);
+        const Contract = await ethers.getContract('Timelock');
         const Timelock = await ethers.getContract('Timelock');
         const provider = new ethers.providers.JsonRpcProvider(network.config.url);
 
         const target = Contract.address;
-        const functionSignature = 'grantRole(bytes32,address)';
-        const data = '0x' + Contract.interface.encodeFunctionData('grantRole', [role, Earn.address]).substring(10);
+        const functionSignature = 'updateDelay(uint256)';
+        const data = '0x' + Contract.interface.encodeFunctionData('updateDelay', [minDelay]).substring(10);
 
         console.log(`target: ${target}`);
         console.log(`functionSignature: ${functionSignature}`);

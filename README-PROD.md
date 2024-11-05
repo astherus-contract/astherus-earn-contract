@@ -64,94 +64,71 @@ npx hardhat 尝试使用全局安装的 Hardhat，但 Hardhat 需要在本地项
 pnpm install --save-dev hardhat
 npx hardhat export-abi
 ```
+## [注意] 生产环境更改namedAccounts配置
 
 # 时间锁合约
-
+## [注意] 生产环境更改TimeLockConfig配置
 ```shell
-npx hardhat deploy --network bscTestnet --tags Timelock
+npx hardhat deploy --network bscMainnetTest --tags Timelock
 ```
 
 ### 代理合约和逻辑合约部署[WithdrawVault]
 
 ```shell
-npx hardhat deploy --network bscTestnet --tags WithdrawVault
+npx hardhat deploy --network bscMainnetTest --tags WithdrawVault
 ```
 
 ### 代理合约和逻辑主合约部署[Earn]
+## [注意] 更改BNB_CHAIN_WRAPPED
 
 ```shell
-npx hardhat deploy --network bscTestnet --tags Earn
+npx hardhat deploy --network bscMainnetTest --tags Earn
 ```
 
 # 验证合约
 
 ```shell
-npx hardhat deploy --network bscTestnet --tags TimelockVerify
+npx hardhat deploy --network bscMainnetTest --tags TimelockVerify
 ```
 
 ```shell
-npx hardhat deploy --network bscTestnet --tags WithdrawVaultVerify
+npx hardhat deploy --network bscMainnetTest --tags WithdrawVaultVerify
 ```
-
+## [注意] 更改BNB_CHAIN_WRAPPED
 ```shell
-npx hardhat deploy --network bscTestnet --tags EarnVerify
+npx hardhat deploy --network bscMainnetTest --tags EarnVerify
 ```
 
 # 合约升级
 
 ```shell
-hardhat deploy --network bscTestnet --tags WithdrawVaultImplementation
+hardhat deploy --network bscMainnetTest --tags WithdrawVaultImplementation
 ```
 
+## [注意] 更改BNB_CHAIN_WRAPPED
 ```shell
-hardhat deploy --network bscTestnet --tags EarnImplementation
+hardhat deploy --network bscMainnetTest --tags EarnImplementation
 ```
 
 # AssXXX 部署
-## 【注意】每次部署成功之后,生成的AssXXX.json要改成正确的代币名称 比如 AssBTC AssBNB ...
+## 【注意】每次部署成功之后,生成的AssXXX.json要改成正确的代币名称 比如 AsBTC AsBNB ...
 ```shell
-npx hardhat deploy --network bscTestnet --tags AssBTC
+npx hardhat deploy --network bscMainnetTest --tags AsBTC
+```
+验证合约
+```shell
+npx hardhat deploy --network bscMainnetTest --tags AsBTCVerify
 ```
 
-```shell
-npx hardhat deploy --network bscTestnet --tags AssBNB
-```
-
-```shell
-npx hardhat deploy --network bscTestnet --tags AssUSDT
-```
-
-```shell
-npx hardhat deploy --network bscTestnet --tags AssUSDC
-```
-
-# 部署测试asset BTC BNB USDT USDC
-
-BNB 地址
-const BNB_CHAIN_TESTNET_WRAPPED = '0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd';
-const BNB_CHAIN_WRAPPED = '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c';
-
-
-```shell
-hardhat deploy --network bscTestnet --tags BTCTest
-```
-
-```shell
-hardhat deploy --network bscTestnet --tags USDTTest
-```
-
-```shell
-hardhat deploy --network bscTestnet --tags USDCTest
-```
 
 # 测试合约升级
 
 ```shell
-npx hardhat upgrade:WithdrawVault --network bscTestnet
+npx hardhat upgrade:WithdrawVault --network bscMainnetTest
 ```
 
 ```shell
-npx hardhat upgrade:Earn --network bscTestnet
+npx hardhat upgrade:Earn --network bscMainnetTest
 ```
 
 # 分配权限
@@ -178,15 +155,20 @@ grantRole: 把 Earn合约地址加到 TRANSFER_ROLE 角色下
 ## 1. 授权
 
 [Earn 合约] grantRole: 把 bot(后端发起交易地址)地址加到 BOT_ROLE 角色下
-npx hardhat grantRole:minter_and_burn_role --network bscTestnet
+更改address 为bot地址
+```shell
+npx hardhat grantRole:earn --network bscMainnetTest
+```
 [WithdrawVault 合约]  grantRole: 把 Earn合约地址加到 TRANSFER_ROLE 角色下
-
+```shell
+npx hardhat grantRole:transfer_role --network bscMainnetTest
+```
 ## 2.[AssXXX 合约] 部署AssXXX合约
 
 ### 2.1 grantRole: 把 Earn合约地址加到 MINTER_AND_BURN_ROLE 角色下
-更改 const contract='AssUSDT' 变量值
+更改 const contract='AsBTC' 变量值
 ```shell
-npx hardhat grantRole:minter_and_burn_role --network bscTestnet
+npx hardhat grantRole:minter_and_burn_role --network bscMainnetTest
 ```
 ### 2.2 approve: 授权spender(Earn合约地址)使用多少数量的token
 
