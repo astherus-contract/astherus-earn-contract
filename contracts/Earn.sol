@@ -22,6 +22,8 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
     bytes32 public constant PAUSE_ROLE = keccak256("PAUSE_ROLE");
     bytes32 public constant BOT_ROLE = keccak256("BOT_ROLE");
 
+    // denominator
+    uint256 public constant DENOMINATOR = 10000;
 
     using Address for address payable;
     using SafeERC20 for IERC20;
@@ -40,6 +42,8 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
     event ClaimWithdraw(address indexed sender, address indexed assTokenAddress, address indexed sourceTokenAddress, uint256 assTokenAmount, uint256 sourceTokenAmount, uint256 requestWithdrawNo);
     event AddEmergencyWithdrawWhitelist(address indexed sender, address indexed assTokenAddress, address indexed user);
     event RemoveEmergencyWithdrawWhitelist(address indexed sender, address indexed assTokenAddress, address indexed user);
+    event UpdateExchangeRateDeviation(address indexed assTokenAddress, uint256 oldExchangeRateDeviation, uint256 newExchangeRateDeviation);
+    event UpdateExchangeRateLimit(address indexed assTokenAddress, uint256 oldExchangeRateLimit, uint256 newExchangeRateLimit);
 
 
     struct Token {
@@ -55,6 +59,14 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         address ceffuAddress;
         bool transferToCeffuEnabled;
         bool emergencyWithdrawEnabled;
+    }
+
+    struct TokenEx {
+        address assTokenAddress;
+        uint256 exchangeRateDeviation;
+        uint256 exchangeRateLimit;
+        uint256 exchangeRateCursor;
+        uint256 exchangeRateCount;
     }
 
     struct ExchangeRateInfo {
@@ -91,6 +103,8 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
     mapping(address => mapping(address => uint)) public emergencyWithdrawWhitelist;
 
     uint256 public requestWithdrawMaxNo;
+    mapping(address => TokenEx) public supportAssTokenEx;
+
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor(address nativeWrapped, address timelockAddress, address withdrawVault) {
@@ -314,6 +328,22 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
             Token storage token = supportAssToken[exchangeRateInfo.assTokenAddress];
             require(token.assTokenAddress != address(0), "not exist");
 
+            uint256 cursor = block.timestamp / 1 days;
+            TokenEx storage tokenEx = supportAssTokenEx[exchangeRateInfo.assTokenAddress];
+            if (tokenEx.exchangeRateCursor == cursor) {
+                require(tokenEx.exchangeRateCount <= tokenEx.exchangeRateLimit, "exceeds maximum limit");
+                tokenEx.exchangeRateCount += 1;
+            } else {
+                tokenEx.exchangeRateCount = 1;
+                tokenEx.exchangeRateCursor = cursor;
+            }
+
+            uint256 diff = exchangeRateInfo.assToSourceExchangeRate > token.assToSourceExchangeRate ? (exchangeRateInfo.assToSourceExchangeRate - token.assToSourceExchangeRate)
+                : (token.assToSourceExchangeRate - exchangeRateInfo.assToSourceExchangeRate);
+            uint256 deviation = diff * DENOMINATOR / exchangeRateInfo.assToSourceExchangeRate;
+
+            require(deviation <= tokenEx.exchangeRateDeviation, "exceeded maximum deviation");
+
             token.assToSourceExchangeRate = exchangeRateInfo.assToSourceExchangeRate;
             token.exchangeRateExpiredTimestamp = exchangeRateInfo.exchangeRateExpiredTimestamp;
             emit UploadExchangeRate(token.assTokenAddress, token.assToSourceExchangeRate, token.exchangeRateExpiredTimestamp);
@@ -374,7 +404,9 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
             require(requestWithdrawInfo.canClaimWithdraw == false, "can not claim");
             require(requestWithdrawInfo.receipt == distributeWithdrawInfo.receipt, "unmatched request");
 
-            requestWithdrawInfo.sourceTokenAmount = distributeWithdrawInfo.sourceTokenAmount;
+            //sourceTokenAmount=(assToSourceExchangeRate/1e8) * (assTokenAmount/1e18)*(10 ** token.sourceTokenDecimals)
+            uint256 sourceTokenAmount = (10 ** token.sourceTokenDecimals) * requestWithdrawInfo.assTokenAmount * token.assToSourceExchangeRate / 1e26;
+            requestWithdrawInfo.sourceTokenAmount = sourceTokenAmount;
             requestWithdrawInfo.canClaimWithdraw = true;
 
             IAss(token.assTokenAddress).burn(address(this), requestWithdrawInfo.assTokenAmount);
@@ -455,5 +487,41 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         } else {
             IWithdrawVault(WITHDRAW_VAULT).transferNative(receipt, amount);
         }
+    }
+
+    function updateExchangeRateDeviation(address assTokenAddress, uint256 exchangeRateDeviation) external onlyRole(ADMIN_ROLE) {
+        require(assTokenAddress != address(0), "assTokenAddress cannot be a zero address");
+        require(exchangeRateDeviation <= DENOMINATOR, "invalid max exchange rate deviation");
+
+        Token storage token = supportAssToken[assTokenAddress];
+        require(token.assTokenAddress != address(0), "not exist");
+
+        TokenEx storage tokenEx = supportAssTokenEx[assTokenAddress];
+        tokenEx.assTokenAddress = assTokenAddress;
+
+        require(tokenEx.exchangeRateDeviation != exchangeRateDeviation, "newExchangeRateDeviation can not be equal oldExchangeRateDeviation");
+
+        uint256 oldExchangeRateDeviation = tokenEx.exchangeRateDeviation;
+        tokenEx.exchangeRateDeviation = exchangeRateDeviation;
+
+        emit UpdateExchangeRateDeviation(assTokenAddress, oldExchangeRateDeviation, tokenEx.exchangeRateDeviation);
+    }
+
+    function updateExchangeRateLimit(address assTokenAddress, uint256 exchangeRateLimit) external onlyRole(ADMIN_ROLE) {
+        require(assTokenAddress != address(0), "assTokenAddress cannot be a zero address");
+        require(exchangeRateLimit > 0, "must be greater than 0");
+
+        Token storage token = supportAssToken[assTokenAddress];
+        require(token.assTokenAddress != address(0), "not exist");
+
+        TokenEx storage tokenEx = supportAssTokenEx[assTokenAddress];
+        tokenEx.assTokenAddress = assTokenAddress;
+
+        require(tokenEx.exchangeRateLimit != exchangeRateLimit, "newExchangeRateLimit can not be equal oldExchangeRateLimit");
+
+        uint256 oldExchangeRateLimit = tokenEx.exchangeRateLimit;
+        tokenEx.exchangeRateLimit = exchangeRateLimit;
+
+        emit UpdateExchangeRateLimit(assTokenAddress, oldExchangeRateLimit, tokenEx.exchangeRateLimit);
     }
 }
