@@ -23,7 +23,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
     bytes32 public constant BOT_ROLE = keccak256("BOT_ROLE");
 
     // denominator
-    uint256 public constant DENOMINATOR = 10000;
+    uint256 public constant DENOMINATOR = 100000;
 
     using Address for address payable;
     using SafeERC20 for IERC20;
@@ -63,6 +63,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
 
     struct TokenEx {
         address assTokenAddress;
+        //percentage (100_000 = 100%)
         uint256 exchangeRateDeviation;
         uint256 exchangeRateLimit;
         uint256 exchangeRateCursor;
