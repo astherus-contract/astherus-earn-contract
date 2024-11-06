@@ -337,6 +337,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
                 tokenEx.exchangeRateCount = 1;
                 tokenEx.exchangeRateCursor = cursor;
             }
+            tokenEx.assTokenAddress = exchangeRateInfo.assTokenAddress;
 
             uint256 diff = exchangeRateInfo.assToSourceExchangeRate > token.assToSourceExchangeRate ? (exchangeRateInfo.assToSourceExchangeRate - token.assToSourceExchangeRate)
                 : (token.assToSourceExchangeRate - exchangeRateInfo.assToSourceExchangeRate);
