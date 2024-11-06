@@ -10,6 +10,8 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/extensions/AccessControlEnumerableUpgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
+import "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 
 import {ZERO, ONE, UC, uc, into} from "unchecked-counter/src/UC.sol";
 import "./interface/IAss.sol";
@@ -27,6 +29,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
 
     using Address for address payable;
     using SafeERC20 for IERC20;
+    using SignatureChecker for address;
 
     event AddToken(address indexed assTokenAddress, address indexed sourceTokenAddress);
     event UpdateDepositEnabled(address indexed assTokenAddress, bool oldDepositEnabled, bool newDepositEnabled);
@@ -44,6 +47,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
     event RemoveEmergencyWithdrawWhitelist(address indexed sender, address indexed assTokenAddress, address indexed user);
     event UpdateExchangeRateDeviation(address indexed assTokenAddress, uint256 oldExchangeRateDeviation, uint256 newExchangeRateDeviation);
     event UpdateExchangeRateLimit(address indexed assTokenAddress, uint256 oldExchangeRateLimit, uint256 newExchangeRateLimit);
+    event NewSigner(address oldSigner, address newSigner);
 
 
     struct Token {
@@ -105,7 +109,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
 
     uint256 public requestWithdrawMaxNo;
     mapping(address => TokenEx) public supportAssTokenEx;
-
+    address public signer;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor(address nativeWrapped, address timelockAddress, address withdrawVault) {
@@ -321,10 +325,14 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         }
     }
 
-    function uploadExchangeRate(ExchangeRateInfo[] calldata exchangeRateInfoList) external nonReentrant onlyRole(BOT_ROLE) {
+    function uploadExchangeRate(bytes calldata message, bytes calldata signature) external nonReentrant onlyRole(BOT_ROLE) {
+        require(signer.isValidSignatureNow(MessageHashUtils.toEthSignedMessageHash(keccak256(message)), signature), "only accept signer signed message");
+        (ExchangeRateInfo[] memory exchangeRateInfoList,uint256 deadLine) = abi.decode(message, (ExchangeRateInfo[], uint256));
+        require(block.timestamp < deadLine, "already passed deadLine");
+
         uint256 length = exchangeRateInfoList.length;
         for (UC i = ZERO; i < uc(length); i = i + ONE) {
-            ExchangeRateInfo calldata exchangeRateInfo = exchangeRateInfoList[i.into()];
+            ExchangeRateInfo memory exchangeRateInfo = exchangeRateInfoList[i.into()];
 
             Token storage token = supportAssToken[exchangeRateInfo.assTokenAddress];
             require(token.assTokenAddress != address(0), "not exist");
@@ -525,5 +533,15 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         tokenEx.exchangeRateLimit = exchangeRateLimit;
 
         emit UpdateExchangeRateLimit(assTokenAddress, oldExchangeRateLimit, tokenEx.exchangeRateLimit);
+    }
+
+    function updateSigner(address newSigner) external onlyRole(ADMIN_ROLE) {
+        require(newSigner != address(0), "newSigner cannot be a zero address");
+        require(newSigner != signer, "newSigner can not be equal oldSigner");
+
+        address oldSigner = signer;
+        signer = newSigner;
+
+        emit NewSigner(oldSigner, signer);
     }
 }
