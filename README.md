@@ -286,3 +286,16 @@ npx hardhat lz:oapp:wire --oapp-config testnet.layerzero.config.ts
 ### oftCmd 0x
 ### lzTokenFee 0
 ### _refundAddress 先多扣native fee，后面通过这个退款地址，返回给发起方
+
+
+
+### Test
+
+```shell
+$ forge test
+```
+#### test a specific contract
+```shell
+forge test --match-contract SignTest -vvvvv --via-ir 
+forge clean && forge test --match-contract SignTest -vvvvv --via-ir
+forge clean && forge test --match-contract SignTest --match-test "testSign" -vvvv --via-ir
