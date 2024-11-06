@@ -3,24 +3,24 @@ const fs = require('fs');
 const prompt = require('prompt-sync')();
 require("@nomicfoundation/hardhat-toolbox");
 
-//CANCELLER_ROLE
-// const role='0xfd643c72710c63c0180259aba6b2d05451e3591a24e58b62239378085726f783'
-//EXECUTOR_ROLE
-// const role='0xd8aa0f3194971a2a116679f7c2090f6939c8d4e01a2a8d7e41d55e5351469e63'
-//PROPOSER_ROLE
-// const role='0xb09aa5aeb3702cfd50b6b62bc4532604938f21248a27a1d5ca736082b6819cc1'
+//ADMIN_ROLE
+const role='0xa49807205ce4d355092ef5a8a18f56e8913cf4a201fbe287825b095693c21775'
 
-//多签地址
-// const address = '';
+const contract='asBTC'
 
-task("grantRole:timelock", "grantRole for timelock")
+const address=''
+
+
+
+task("grantAdminRoleForAsBTC", "grantAdminRoleForAsBTC")
     .setAction(async ({facets}) => {
+        const Contract = await ethers.getContract(contract);
         const Timelock = await ethers.getContract('Timelock');
         const provider = new ethers.providers.JsonRpcProvider(network.config.url);
 
-        const target = Timelock.address;
+        const target = Contract.address;
         const functionSignature = 'grantRole(bytes32,address)';
-        const data = '0x' + Timelock.interface.encodeFunctionData('grantRole', [role, address]).substring(10);
+        const data = '0x' + Contract.interface.encodeFunctionData('grantRole', [role, address]).substring(10);
 
         console.log(`target: ${target}`);
         console.log(`functionSignature: ${functionSignature}`);

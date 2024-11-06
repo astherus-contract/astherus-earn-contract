@@ -3,19 +3,20 @@ const fs = require('fs');
 const prompt = require('prompt-sync')();
 require("@nomicfoundation/hardhat-toolbox");
 
-//TRANSFER_ROLE
-const role='0x8502233096d909befbda0999bb8ea2f3a6be3c138b9fbf003752a4c8bce86f6c'
+//PAUSE_ROLE
+const role='0x139c2898040ef16910dc9f44dc697df79363da767d8bc92f2e310312b816e46d'
 
-task("grantRole:transfer_role", "grantRole:transfer_role")
+const address=''
+
+task("grantRole:WithdrawVault", "grantRole:WithdrawVault")
     .setAction(async ({facets}) => {
-        const Earn = await ethers.getContract('Earn')
         const WithdrawVault = await ethers.getContract('WithdrawVault');
         const Timelock = await ethers.getContract('Timelock');
         const provider = new ethers.providers.JsonRpcProvider(network.config.url);
 
         const target = WithdrawVault.address;
         const functionSignature = 'grantRole(bytes32,address)';
-        const data = '0x' + WithdrawVault.interface.encodeFunctionData('grantRole', [role, Earn.address]).substring(10);
+        const data = '0x' + WithdrawVault.interface.encodeFunctionData('grantRole', [role, address]).substring(10);
 
         console.log(`target: ${target}`);
         console.log(`functionSignature: ${functionSignature}`);

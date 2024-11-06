@@ -8,7 +8,7 @@ const TimeLockConfig = {
     basemain: {
         TimeLock: {
             minDelay: 6 * 60 * 60,
-            maxDelay: 24 * 60 * 60,
+            maxDelay: 2 * 24 * 60 * 60,
         }
     },
 }
