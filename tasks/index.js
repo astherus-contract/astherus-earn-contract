@@ -1,7 +1,10 @@
 require('./UpgradeEarn.js');
 require('./UpgradeWithdrawVault.js');
-require('./GrantRoleForAssXXX')
+require('./GrantMinterBurnRoleForAsBTC')
 require('./GrantRoleForEarn')
 require('./GrantRoleForWithdrawVault')
 require('./ChangeTimelockMinDelay')
 require('./GrantRoleForTimeLock')
+require('./SetDelegateForAsBTC')
+require('./GrantAdminRoleForAsBTC')
+

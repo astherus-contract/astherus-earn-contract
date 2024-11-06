@@ -4,7 +4,11 @@ const prompt = require('prompt-sync')();
 require("@nomicfoundation/hardhat-toolbox");
 
 //秒
-const minDelay=5
+// const maxDelay = 2 * 24 * 60 * 60
+
+const minDelay = 6 * 60 * 60
+
+
 
 task("change:timelock_min_delay", "change timelock_min_delay")
     .setAction(async ({facets}) => {
@@ -15,6 +19,10 @@ task("change:timelock_min_delay", "change timelock_min_delay")
         const target = Contract.address;
         const functionSignature = 'updateDelay(uint256)';
         const data = '0x' + Contract.interface.encodeFunctionData('updateDelay', [minDelay]).substring(10);
+
+        // const functionSignature = 'setMaxDelay(uint256)';
+        // const data = '0x' + Contract.interface.encodeFunctionData('setMaxDelay', [maxDelay]).substring(10);
+
 
         console.log(`target: ${target}`);
         console.log(`functionSignature: ${functionSignature}`);
