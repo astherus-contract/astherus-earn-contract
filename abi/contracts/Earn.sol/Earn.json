@@ -322,6 +322,25 @@
       {
         "indexed": false,
         "internalType": "address",
+        "name": "oldSigner",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newSigner",
+        "type": "address"
+      }
+    ],
+    "name": "NewSigner",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
         "name": "account",
         "type": "address"
       }
@@ -590,6 +609,56 @@
       },
       {
         "indexed": false,
+        "internalType": "uint256",
+        "name": "oldExchangeRateDeviation",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newExchangeRateDeviation",
+        "type": "uint256"
+      }
+    ],
+    "name": "UpdateExchangeRateDeviation",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "assTokenAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "oldExchangeRateLimit",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newExchangeRateLimit",
+        "type": "uint256"
+      }
+    ],
+    "name": "UpdateExchangeRateLimit",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "assTokenAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
         "internalType": "bool",
         "name": "oldTransferToCeffuEnabled",
         "type": "bool"
@@ -701,6 +770,19 @@
         "internalType": "bytes32",
         "name": "",
         "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "DENOMINATOR",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -1256,6 +1338,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "signer",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -1314,6 +1409,45 @@
         "internalType": "bool",
         "name": "emergencyWithdrawEnabled",
         "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "supportAssTokenEx",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "assTokenAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "exchangeRateDeviation",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "exchangeRateLimit",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "exchangeRateCursor",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "exchangeRateCount",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -1439,6 +1573,55 @@
         "type": "address"
       },
       {
+        "internalType": "uint256",
+        "name": "exchangeRateDeviation",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateExchangeRateDeviation",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "assTokenAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "exchangeRateLimit",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateExchangeRateLimit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newSigner",
+        "type": "address"
+      }
+    ],
+    "name": "updateSigner",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "assTokenAddress",
+        "type": "address"
+      },
+      {
         "internalType": "bool",
         "name": "enabled",
         "type": "bool"
@@ -1488,26 +1671,14 @@
   {
     "inputs": [
       {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "assTokenAddress",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "assToSourceExchangeRate",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "exchangeRateExpiredTimestamp",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct Earn.ExchangeRateInfo[]",
-        "name": "exchangeRateInfoList",
-        "type": "tuple[]"
+        "internalType": "bytes",
+        "name": "message",
+        "type": "bytes"
+      },
+      {
+        "internalType": "bytes",
+        "name": "signature",
+        "type": "bytes"
       }
     ],
     "name": "uploadExchangeRate",

@@ -7,4 +7,5 @@ require('./ChangeTimelockMinDelay')
 require('./GrantRoleForTimeLock')
 require('./SetDelegateForAsBTC')
 require('./GrantAdminRoleForAsBTC')
+require('./UploadExchangeRate')
 
