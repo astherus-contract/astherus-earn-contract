@@ -8,10 +8,10 @@ require("@nomicfoundation/hardhat-toolbox");
 //EXECUTOR_ROLE
 // const role='0xd8aa0f3194971a2a116679f7c2090f6939c8d4e01a2a8d7e41d55e5351469e63'
 //PROPOSER_ROLE
-// const role='0xb09aa5aeb3702cfd50b6b62bc4532604938f21248a27a1d5ca736082b6819cc1'
+const role='0xb09aa5aeb3702cfd50b6b62bc4532604938f21248a27a1d5ca736082b6819cc1'
 
 //多签地址
-// const address = '';
+const address = '';
 
 task("grantRole:timelock", "grantRole for timelock")
     .setAction(async ({facets}) => {
