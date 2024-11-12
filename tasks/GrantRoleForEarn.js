@@ -10,7 +10,7 @@ require("@nomicfoundation/hardhat-toolbox");
 // const role='0xa49807205ce4d355092ef5a8a18f56e8913cf4a201fbe287825b095693c21775'
 
 //PAUSE_ROLE
-// const role='0x139c2898040ef16910dc9f44dc697df79363da767d8bc92f2e310312b816e46d'
+const role='0x139c2898040ef16910dc9f44dc697df79363da767d8bc92f2e310312b816e46d'
 
 
 const address = '';

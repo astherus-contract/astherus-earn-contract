@@ -299,3 +299,11 @@ $ forge test
 forge test --match-contract SignTest -vvvvv --via-ir 
 forge clean && forge test --match-contract SignTest -vvvvv --via-ir
 forge clean && forge test --match-contract SignTest --match-test "testSign" -vvvv --via-ir
+
+
+### storage slot
+
+cast storage 0x0612Aaa3Dd5E50368A95Bd2D2dB0025641B79cE5 --via-ir --rpc-url https://data-seed-prebsc-1-s1.bnbchain.org:8545/ --etherscan-api-key TDID7NM35CIQ35RU4TUV5XQV9GBDKCBJYI
+cast storage 0x7f1be83A1CDA4a903323cfF3390a2721D46f219E --via-ir --rpc-url https://data-seed-prebsc-1-s1.bnbchain.org:8545/ --etherscan-api-key TDID7NM35CIQ35RU4TUV5XQV9GBDKCBJYI
+cast storage 0x541d298047312DCBCc4Ae55d9f9FAb6104132c9e --via-ir --rpc-url https://data-seed-prebsc-1-s1.bnbchain.org:8545/ --etherscan-api-key TDID7NM35CIQ35RU4TUV5XQV9GBDKCBJYI
+
