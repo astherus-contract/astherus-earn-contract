@@ -6,13 +6,13 @@ require("@nomicfoundation/hardhat-toolbox");
 task("uploadExchangeRate", "uploadExchangeRate")
     .setAction(async ({facets}) => {
         const Earn = await ethers.getContract('Earn');
-        const AssBTC = await ethers.getContract('AssBTC');
+        const AsBTC = await ethers.getContract('AsBTC');
 
         const {deployer} = await ethers.getNamedSigners();
         const provider = new ethers.providers.JsonRpcProvider(network.config.url);
 
         const values = [[
-            [AssBTC.address, 100000001, (await provider.getBlock()).timestamp + 60 * 60 * 24 * 30]
+            [AsBTC.address, 100000001, (await provider.getBlock()).timestamp + 60 * 60 * 24 * 30]
         ], 1735660800]
 
         const types = ["tuple(address, uint256,uint256)[]", "uint256"];
