@@ -328,8 +328,9 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
 
     function uploadExchangeRate(bytes calldata message, bytes calldata signature) external nonReentrant onlyRole(BOT_ROLE) {
         require(signer.isValidSignatureNow(MessageHashUtils.toEthSignedMessageHash(keccak256(message)), signature), "only accept signer signed message");
-        (ExchangeRateInfo[] memory exchangeRateInfoList,uint256 deadLine) = abi.decode(message, (ExchangeRateInfo[], uint256));
+        (ExchangeRateInfo[] memory exchangeRateInfoList,uint256 deadLine,uint256 chainId) = abi.decode(message, (ExchangeRateInfo[], uint256, uint256));
         require(block.timestamp < deadLine, "already passed deadLine");
+        require(block.chainid == chainId, "invalid chainId");
 
         uint256 length = exchangeRateInfoList.length;
         for (UC i = ZERO; i < uc(length); i = i + ONE) {
@@ -347,12 +348,11 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
                 tokenEx.exchangeRateCount = 1;
                 tokenEx.exchangeRateCursor = cursor;
             }
-            tokenEx.assTokenAddress = exchangeRateInfo.assTokenAddress;
 
             uint256 diff = exchangeRateInfo.assToSourceExchangeRate > token.assToSourceExchangeRate ? (exchangeRateInfo.assToSourceExchangeRate - token.assToSourceExchangeRate)
                 : (token.assToSourceExchangeRate - exchangeRateInfo.assToSourceExchangeRate);
 
-            uint256 deviation = Math.mulDiv(diff, DENOMINATOR, exchangeRateInfo.assToSourceExchangeRate);
+            uint256 deviation = Math.mulDiv(diff, DENOMINATOR, token.assToSourceExchangeRate);
 
             require(deviation <= tokenEx.exchangeRateDeviation, "exceeded maximum deviation");
 
@@ -509,7 +509,9 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         require(token.assTokenAddress != address(0), "not exist");
 
         TokenEx storage tokenEx = supportAssTokenEx[assTokenAddress];
-        tokenEx.assTokenAddress = assTokenAddress;
+        if (tokenEx.assTokenAddress != assTokenAddress) {
+            tokenEx.assTokenAddress = assTokenAddress;
+        }
 
         require(tokenEx.exchangeRateDeviation != exchangeRateDeviation, "newExchangeRateDeviation can not be equal oldExchangeRateDeviation");
 
@@ -527,7 +529,9 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         require(token.assTokenAddress != address(0), "not exist");
 
         TokenEx storage tokenEx = supportAssTokenEx[assTokenAddress];
-        tokenEx.assTokenAddress = assTokenAddress;
+        if (tokenEx.assTokenAddress != assTokenAddress) {
+            tokenEx.assTokenAddress = assTokenAddress;
+        }
 
         require(tokenEx.exchangeRateLimit != exchangeRateLimit, "newExchangeRateLimit can not be equal oldExchangeRateLimit");
 
