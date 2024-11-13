@@ -13,9 +13,9 @@ task("uploadExchangeRate", "uploadExchangeRate")
 
         const values = [[
             [AsBTC.address, 100000001, (await provider.getBlock()).timestamp + 60 * 60 * 24 * 30]
-        ], 1735660800]
+        ], 1735660800, network.config.chainId]
 
-        const types = ["tuple(address, uint256,uint256)[]", "uint256"];
+        const types = ["tuple(address, uint256,uint256)[]", "uint256", "uint256"];
 
         const encodeData = ethers.utils.defaultAbiCoder.encode(types, values);
         const messageHash = ethers.utils.keccak256(encodeData);
