@@ -16,6 +16,7 @@ import "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 import {ZERO, ONE, UC, uc, into} from "unchecked-counter/src/UC.sol";
 import "./interface/IAss.sol";
 import "./interface/IWithdrawVault.sol";
+import "@openzeppelin/contracts/utils/math/Math.sol";
 
 
 contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable {
@@ -305,7 +306,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
 
         //assToSourceExchangeRate=token.assToSourceExchangeRate # XXX amount/(assXXX total supply)
         //assXXXAmount=1/(assToSourceExchangeRate/1e8) * amountIn/(10 ** token.sourceTokenDecimals) * 1e18
-        uint256 assXXXAmount = amountIn * 1e26 / (token.assToSourceExchangeRate * (10 ** token.sourceTokenDecimals));
+        uint256 assXXXAmount = Math.mulDiv(amountIn, 1e26, (token.assToSourceExchangeRate * (10 ** token.sourceTokenDecimals)));
 
         IAss(assTokenAddress).mint(msg.sender, assXXXAmount);
         emit MintAssXXX(msg.sender, sourceTokenAddress, token.assTokenAddress, amountIn, assXXXAmount, token.assToSourceExchangeRate);
@@ -340,7 +341,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
             uint256 cursor = block.timestamp / 1 days;
             TokenEx storage tokenEx = supportAssTokenEx[exchangeRateInfo.assTokenAddress];
             if (tokenEx.exchangeRateCursor == cursor) {
-                require(tokenEx.exchangeRateCount <= tokenEx.exchangeRateLimit, "exceeds maximum limit");
+                require(tokenEx.exchangeRateCount < tokenEx.exchangeRateLimit, "exceeds maximum limit");
                 tokenEx.exchangeRateCount += 1;
             } else {
                 tokenEx.exchangeRateCount = 1;
@@ -350,7 +351,8 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
 
             uint256 diff = exchangeRateInfo.assToSourceExchangeRate > token.assToSourceExchangeRate ? (exchangeRateInfo.assToSourceExchangeRate - token.assToSourceExchangeRate)
                 : (token.assToSourceExchangeRate - exchangeRateInfo.assToSourceExchangeRate);
-            uint256 deviation = diff * DENOMINATOR / exchangeRateInfo.assToSourceExchangeRate;
+
+            uint256 deviation = Math.mulDiv(diff, DENOMINATOR, exchangeRateInfo.assToSourceExchangeRate);
 
             require(deviation <= tokenEx.exchangeRateDeviation, "exceeded maximum deviation");
 
@@ -415,7 +417,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
             require(requestWithdrawInfo.receipt == distributeWithdrawInfo.receipt, "unmatched request");
 
             //sourceTokenAmount=(assToSourceExchangeRate/1e8) * (assTokenAmount/1e18)*(10 ** token.sourceTokenDecimals)
-            uint256 sourceTokenAmount = (10 ** token.sourceTokenDecimals) * requestWithdrawInfo.assTokenAmount * token.assToSourceExchangeRate / 1e26;
+            uint256 sourceTokenAmount = Math.mulDiv(requestWithdrawInfo.assTokenAmount, (10 ** token.sourceTokenDecimals) * token.assToSourceExchangeRate, 1e26);
             requestWithdrawInfo.sourceTokenAmount = sourceTokenAmount;
             requestWithdrawInfo.canClaimWithdraw = true;
 
