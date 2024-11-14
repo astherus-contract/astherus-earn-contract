@@ -13,6 +13,8 @@ import "./interface/IWithdrawVault.sol";
 
 contract WithdrawVault is Initializable, PausableUpgradeable, AccessControlEnumerableUpgradeable, UUPSUpgradeable, IWithdrawVault, ReentrancyGuardUpgradeable {
 
+    //admin role
+    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant PAUSE_ROLE = keccak256("PAUSE_ROLE");
     bytes32 public constant TRANSFER_ROLE = keccak256("TRANSFER_ROLE");
 
@@ -53,7 +55,7 @@ contract WithdrawVault is Initializable, PausableUpgradeable, AccessControlEnume
         _pause();
     }
 
-    function unpause() external onlyRole(PAUSE_ROLE) {
+    function unpause() external onlyRole(ADMIN_ROLE) {
         _unpause();
     }
 

@@ -144,7 +144,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         _pause();
     }
 
-    function unpause() external onlyRole(PAUSE_ROLE) {
+    function unpause() external onlyRole(ADMIN_ROLE) {
         _unpause();
     }
 
