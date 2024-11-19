@@ -83,6 +83,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
 
     struct DistributeWithdrawInfo {
         address assTokenAddress;
+        // reserve,not used yet
         uint256 sourceTokenAmount;
         uint256 requestWithdrawNo;
         address receipt;
@@ -124,7 +125,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         _disableInitializers();
     }
 
-    modifier onlyTImelock() {
+    modifier onlyTimelock() {
         require(msg.sender == TIMELOCK_ADDRESS, "only timelock");
         _;
     }
@@ -148,7 +149,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         _unpause();
     }
 
-    function _authorizeUpgrade(address newImplementation) internal onlyTImelock override {}
+    function _authorizeUpgrade(address newImplementation) internal onlyTimelock override {}
 
     function addToken(
         address assTokenAddress,
@@ -169,6 +170,8 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
         Token storage token = supportAssToken[assTokenAddress];
         require(token.assTokenAddress == address(0), "duplicate add");
         require(supportSourceToken[sourceTokenAddress] == address(0), "duplicate add");
+        // exchangeRate expired timestamp
+        require(exchangeRateExpiredTimestamp > block.timestamp, "exchangeRateExpiredTimestamp expired");
 
         token.assTokenAddress = assTokenAddress;
         token.sourceTokenAddress = sourceTokenAddress;
@@ -338,6 +341,8 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
 
             Token storage token = supportAssToken[exchangeRateInfo.assTokenAddress];
             require(token.assTokenAddress != address(0), "not exist");
+            // exchangeRate expired timestamp
+            require(exchangeRateInfo.exchangeRateExpiredTimestamp > block.timestamp, "exchangeRateExpiredTimestamp expired");
 
             uint256 cursor = block.timestamp / 1 days;
             TokenEx storage tokenEx = supportAssTokenEx[exchangeRateInfo.assTokenAddress];
@@ -371,7 +376,7 @@ contract Earn is Initializable, PausableUpgradeable, AccessControlEnumerableUpgr
     }
 
     function _doRequestWithdraw(address assTokenAddress, uint256 assTokenAmount, bool emergency) private {
-        require(assTokenAddress != address(0), "sourceTokenAddress cannot be a zero address");
+        require(assTokenAddress != address(0), "assTokenAddress cannot be a zero address");
         require(assTokenAmount > 0, "invalid amount");
 
         Token storage token = supportAssToken[assTokenAddress];

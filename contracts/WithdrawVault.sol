@@ -36,7 +36,7 @@ contract WithdrawVault is Initializable, PausableUpgradeable, AccessControlEnume
         }
     }
 
-    modifier onlyTImelock() {
+    modifier onlyTimelock() {
         require(msg.sender == TIMELOCK_ADDRESS, "only timelock");
         _;
     }
@@ -59,7 +59,7 @@ contract WithdrawVault is Initializable, PausableUpgradeable, AccessControlEnume
         _unpause();
     }
 
-    function _authorizeUpgrade(address newImplementation) internal onlyTImelock override {}
+    function _authorizeUpgrade(address newImplementation) internal onlyTimelock override {}
 
     function transferNative(address receipt, uint256 amount) external nonReentrant whenNotPaused onlyRole(TRANSFER_ROLE) {
         require(amount > 0, "invalid amount");
